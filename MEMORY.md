@@ -11,7 +11,8 @@ Phase 1 — Runtime Core (see PHASE.md). Not started; repo contains steering doc
 - **2026-08-12** — Project founded. Researched the Aug-2026 agent-infra landscape
   (LangGraph checkpointing, Temporal GA OpenAI-SDK integration, MCP 2026-07-28 spec,
   memory taxonomy, OTel GenAI conventions, EU AI Act Art. 14). Wrote CLAUDE.md,
-  ENTERPRISE.md, PHASE.md, MEMORY.md.
+  ENTERPRISE.md, PHASE.md, MEMORY.md, README.md. Published to GitHub:
+  https://github.com/lonexreb/Production-Grade-Agentic-AI-Systems (public, branch main).
 
 ## Active Decisions
 
@@ -26,17 +27,16 @@ Phase 1 — Runtime Core (see PHASE.md). Not started; repo contains steering doc
 
 ## Next Steps (ordered)
 
-1. `git init` + first commit of the four docs (offer to push to GitHub).
-2. Scaffold: `pyproject.toml`, `runtime/`, `docker-compose.yml` (postgres/pgvector,
+1. Scaffold: `pyproject.toml`, `runtime/`, `docker-compose.yml` (postgres/pgvector,
    redis, langfuse).
-3. Walking skeleton: 4-node LangGraph graph + PostgresSaver, `run/resume` working.
-4. Idempotency-key table + skip-on-resume, with the double-run test (TDD).
-5. Crash-resume demo (`kill -9` mid-run → resume → verify).
+2. Walking skeleton: 4-node LangGraph graph + PostgresSaver, `run/resume` working.
+3. Idempotency-key table + skip-on-resume, with the double-run test (TDD).
+4. Crash-resume demo (`kill -9` mid-run → resume → verify).
 
 ## Open Questions
 
 - Which real MCP tool for Phase 1's router demo (GitHub? Slack? filesystem)?
-- Blog platform + repo name availability check for "OpenAgentOS" on GitHub/PyPI.
+- Blog platform for the weekly posts.
 
 ## Gotchas
 
