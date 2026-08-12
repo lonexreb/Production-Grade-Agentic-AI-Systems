@@ -33,11 +33,26 @@ Every app shares the same runtime — each one is chosen to stress a distinct ru
 capability: HR agent, Finance agent, IT Ops, Customer Support, SWE agent, Healthcare
 referral, Recruiting, Research, and more. Roadmap in [PHASE.md](PHASE.md).
 
+## Quickstart
+
+```bash
+docker compose up -d --wait      # postgres (pgvector) + redis
+uv sync --group dev
+uv run pytest                    # engine resume, idempotency, tool router
+uv run python -m apps.demo.crash_demo
+```
+
+The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
+the process **after** its side effect executes but **before** the node completes
+(the worst-case crash window), resumes the same run in a fresh process, and proves
+the run finishes with the side effect executed **exactly once**.
+
 ## Status
 
-Phase 1 (runtime core) — in progress. The acceptance test: an agent run survives
-`kill -9` mid-execution and resumes exactly where it stopped, with no duplicated side
-effects.
+Phase 1 (runtime core) — in progress. Shipped so far: durable engine
+(run/resume/replay/history), idempotent side effects (claim → execute → record),
+tool router (manifest, timeout, retry/backoff), OTel GenAI tracing, and the
+crash-resume walking skeleton above.
 
 ## Docs
 

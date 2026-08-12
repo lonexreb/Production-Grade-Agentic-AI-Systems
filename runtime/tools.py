@@ -1,0 +1,66 @@
+"""Module 3: tool router — one gateway between agents and the outside world.
+
+Every tool carries a manifest: timeout, retry policy, risk tier. Calls are traced.
+# ponytail: local-callable tools only; the MCP client adapter is the next slice
+# (same Tool interface, fn becomes an MCP session call).
+"""
+
+import random
+import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
+from dataclasses import dataclass, field
+from typing import Any, Callable, Literal
+
+from runtime import otel
+
+RiskTier = Literal["auto", "notify", "approve"]
+
+
+@dataclass(frozen=True)
+class Tool:
+    name: str
+    fn: Callable[..., Any]
+    timeout_s: float = 30.0
+    max_retries: int = 2
+    risk_tier: RiskTier = "auto"
+
+
+class ToolError(Exception):
+    """Raised after the retry budget is exhausted."""
+
+
+@dataclass
+class ToolRouter:
+    tools: dict[str, Tool] = field(default_factory=dict)
+
+    def register(self, tool: Tool) -> None:
+        if tool.name in self.tools:
+            raise ValueError(f"tool already registered: {tool.name}")
+        self.tools[tool.name] = tool
+
+    def call(self, name: str, run_id: str = "", **kwargs: Any) -> Any:
+        tool = self.tools.get(name)
+        if tool is None:
+            raise ToolError(f"unknown tool: {name}")
+
+        last_err: Exception | None = None
+        for attempt in range(tool.max_retries + 1):
+            with otel.span(
+                f"execute_tool {name}",
+                **{
+                    otel.ATTR_OPERATION: "execute_tool",
+                    otel.ATTR_TOOL_NAME: name,
+                    otel.ATTR_RUN_ID: run_id,
+                    otel.ATTR_RETRY_COUNT: attempt,
+                },
+            ):
+                try:
+                    with ThreadPoolExecutor(max_workers=1) as pool:
+                        return pool.submit(tool.fn, **kwargs).result(timeout=tool.timeout_s)
+                except FutureTimeout as e:
+                    last_err = ToolError(f"{name} timed out after {tool.timeout_s}s")
+                except Exception as e:  # noqa: BLE001 - retry ladder catches all tool faults
+                    last_err = e
+            if attempt < tool.max_retries:
+                time.sleep(min(2**attempt, 10) + random.uniform(0, 0.3))
+        raise ToolError(f"{name} failed after {tool.max_retries + 1} attempts") from last_err

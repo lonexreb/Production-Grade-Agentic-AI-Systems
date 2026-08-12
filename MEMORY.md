@@ -4,11 +4,19 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 1 — Runtime Core (see PHASE.md). Not started; repo contains steering docs only.
+Phase 1 — Runtime Core (see PHASE.md). Walking skeleton SHIPPED: crash-resume
+acceptance demo passes (kill mid-run → resume → exactly one side effect).
 
 ## Last Session
 
-- **2026-08-12** — Project founded. Researched the Aug-2026 agent-infra landscape
+- **2026-08-12 (2)** — Phase 1 walking skeleton. Scaffolded pyproject (uv, Python
+  3.12+), docker-compose (pgvector postgres on host port 5433, redis on 6380).
+  Built runtime/: engine.py (Runtime.run/resume/history/replay on PostgresSaver),
+  side_effects.py (claim→execute→record idempotency), tools.py (router with
+  timeout/retry/backoff), otel.py (GenAI semconv attrs isolated, console exporter).
+  Demo agent (plan→act→verify→respond) + crash_demo.py acceptance test: PASS.
+  8 pytest tests green.
+- **2026-08-12 (1)** — Project founded. Researched the Aug-2026 agent-infra landscape
   (LangGraph checkpointing, Temporal GA OpenAI-SDK integration, MCP 2026-07-28 spec,
   memory taxonomy, OTel GenAI conventions, EU AI Act Art. 14). Wrote CLAUDE.md,
   ENTERPRISE.md, PHASE.md, MEMORY.md, README.md. Published to GitHub:
@@ -27,11 +35,15 @@ Phase 1 — Runtime Core (see PHASE.md). Not started; repo contains steering doc
 
 ## Next Steps (ordered)
 
-1. Scaffold: `pyproject.toml`, `runtime/`, `docker-compose.yml` (postgres/pgvector,
-   redis, langfuse).
-2. Walking skeleton: 4-node LangGraph graph + PostgresSaver, `run/resume` working.
-3. Idempotency-key table + skip-on-resume, with the double-run test (TDD).
-4. Crash-resume demo (`kill -9` mid-run → resume → verify).
+1. Watchdog: detect dead runs (no checkpoint progress + no live process) and
+   re-invoke — completes ENTERPRISE.md module 1 for Phase 1.
+2. MCP client adapter for the tool router (same `Tool` interface; fn becomes an
+   MCP session call) + pick the first real MCP server.
+3. OTLP → Langfuse export (add langfuse to docker-compose; swap ConsoleSpanExporter
+   in `runtime/otel.py`).
+4. Optional LLM planner in demo agent via `llm` extra (uses ANTHROPIC_API_KEY when
+   set; deterministic stub otherwise).
+5. Record the crash-resume demo (asciinema/GIF) + Phase 1 blog post draft.
 
 ## Open Questions
 
