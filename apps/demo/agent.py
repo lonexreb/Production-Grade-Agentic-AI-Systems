@@ -53,8 +53,24 @@ router.register(Tool(name="send_greeting", fn=_send_greeting, timeout_s=10))
 
 
 def plan_node(state: DemoState) -> DemoState:
-    # ponytail: deterministic planner; swap in an LLM call (optional `llm` extra)
-    # when planning quality matters — crash-resume correctness doesn't need it.
+    """LLM planner when ANTHROPIC_API_KEY is set (install extras: `uv sync --extra llm`);
+    deterministic stub otherwise so tests and CI never need secrets."""
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        try:
+            import anthropic
+
+            msg = anthropic.Anthropic().messages.create(
+                model="claude-sonnet-5",
+                max_tokens=100,
+                messages=[{
+                    "role": "user",
+                    "content": f"Write a one-line plan to fulfil this request: {state['request']}. "
+                               "Start your reply with 'greet the requester:'",
+                }],
+            )
+            return {"plan": msg.content[0].text.strip()}
+        except ImportError:
+            pass  # key set but `llm` extra not installed -> stub
     return {"plan": f"greet the requester: {state['request']}"}
 
 

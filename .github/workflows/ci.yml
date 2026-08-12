@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: openagentos
+          POSTGRES_PASSWORD: openagentos
+          POSTGRES_DB: openagentos
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U openagentos"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --group dev
+      - run: uv run pytest -q
+      - run: uv run python -m apps.demo.crash_demo

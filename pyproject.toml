@@ -8,6 +8,8 @@ dependencies = [
     "langgraph-checkpoint-postgres>=2.0",
     "psycopg[binary,pool]>=3.2",
     "opentelemetry-sdk>=1.30",
+    "mcp>=2.0.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.44.0",
 ]
 
 [project.optional-dependencies]

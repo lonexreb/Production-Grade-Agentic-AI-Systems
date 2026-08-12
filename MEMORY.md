@@ -4,11 +4,21 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 1 — Runtime Core (see PHASE.md). Walking skeleton SHIPPED: crash-resume
-acceptance demo passes (kill mid-run → resume → exactly one side effect).
+Phase 1 — Runtime Core (see PHASE.md). Modules 1, 2, 3, 6 SHIPPED: crash-resume
+acceptance demo passes with watchdog-driven recovery (kill mid-run → lease expires
+→ watchdog revives → exactly one side effect).
 
 ## Last Session
 
+- **2026-08-12 (3)** — Completed Phase 1 core. Watchdog (runs table + lease
+  heartbeat in engine; Watchdog.dead_runs/revive_dead; crash_demo now recovers via
+  watchdog, not manual --resume; OAOS_LEASE_S env). MCP adapter
+  (runtime/mcp_adapter.py: mcp_tool() wraps an MCP server tool as a router Tool;
+  tested against real mcp-server-time via uvx — note: server pinned `--with mcp<2`,
+  its release predates SDK 2.x renames like isError→is_error). OTLP export when
+  OTEL_EXPORTER_OTLP_ENDPOINT set. Optional LLM planner in demo (ANTHROPIC_API_KEY
+  + `llm` extra; stub otherwise). GitHub Actions CI (pytest + crash demo).
+  11 tests green.
 - **2026-08-12 (2)** — Phase 1 walking skeleton. Scaffolded pyproject (uv, Python
   3.12+), docker-compose (pgvector postgres on host port 5433, redis on 6380).
   Built runtime/: engine.py (Runtime.run/resume/history/replay on PostgresSaver),
@@ -35,15 +45,15 @@ acceptance demo passes (kill mid-run → resume → exactly one side effect).
 
 ## Next Steps (ordered)
 
-1. Watchdog: detect dead runs (no checkpoint progress + no live process) and
-   re-invoke — completes ENTERPRISE.md module 1 for Phase 1.
-2. MCP client adapter for the tool router (same `Tool` interface; fn becomes an
-   MCP session call) + pick the first real MCP server.
-3. OTLP → Langfuse export (add langfuse to docker-compose; swap ConsoleSpanExporter
-   in `runtime/otel.py`).
-4. Optional LLM planner in demo agent via `llm` extra (uses ANTHROPIC_API_KEY when
-   set; deterministic stub otherwise).
-5. Record the crash-resume demo (asciinema/GIF) + Phase 1 blog post draft.
+1. Record the crash-resume demo (asciinema/GIF) + Phase 1 blog post draft
+   ("Checkpoints are not durable execution").
+2. Langfuse in docker-compose as the trace viewer (OTLP endpoint already wired via
+   OTEL_EXPORTER_OTLP_ENDPOINT).
+3. Persistent MCP session pool in mcp_adapter (current: session per call, ~1s
+   overhead) — only if demo latency starts to matter.
+4. Start Phase 2: HR Agent skeleton + risk-tier enforcement in the router
+   (approve-tier tools currently unenforced — router accepts them; interrupt()
+   gating lands with Phase 2).
 
 ## Open Questions
 

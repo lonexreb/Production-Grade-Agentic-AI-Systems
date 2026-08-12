@@ -22,16 +22,24 @@ _configured = False
 
 
 def configure(service_name: str = "openagentos") -> None:
-    """Idempotent tracer setup. Console exporter for now.
+    """Idempotent tracer setup.
 
-    ponytail: OTLP->Langfuse export deferred until the langfuse compose stack lands;
-    swap ConsoleSpanExporter for OTLPSpanExporter then.
+    Exports OTLP/HTTP when OTEL_EXPORTER_OTLP_ENDPOINT is set (works with
+    Langfuse, LangSmith, Grafana, any OTLP backend); console otherwise.
     """
+    import os
+
     global _configured
     if _configured:
         return
+    if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+        exporter = OTLPSpanExporter()  # reads endpoint/headers from standard OTEL_* env
+    else:
+        exporter = ConsoleSpanExporter()
     provider = TracerProvider(resource=Resource.create({"service.name": service_name}))
-    provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+    provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
     _configured = True
 
