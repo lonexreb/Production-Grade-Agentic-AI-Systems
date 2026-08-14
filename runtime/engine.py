@@ -57,6 +57,24 @@ class Runtime:
         input = Command(resume=decision) if decision is not None else None
         return self.run(builder, input, run_id)
 
+    def pending(self, builder: StateGraph, run_id: str) -> Any | None:
+        """The interrupt payload a paused run is waiting on, or None."""
+        with PostgresSaver.from_conn_string(self.db_url) as saver:
+            graph = builder.compile(checkpointer=saver)
+            state = graph.get_state(self._config(run_id))
+            for task in state.tasks:
+                if task.interrupts:
+                    return task.interrupts[0].value
+        return None
+
+    def status(self, run_id: str) -> str | None:
+        """'running' | 'paused' | 'done' | 'failed', or None if unknown."""
+        with psycopg.connect(self.db_url) as conn:
+            row = conn.execute(
+                "SELECT status FROM runs WHERE run_id = %s", (run_id,)
+            ).fetchone()
+        return row[0] if row else None
+
     def history(self, run_id: str) -> list[dict]:
         """Checkpoints for a run, newest first: id, timestamp, state values."""
         with PostgresSaver.from_conn_string(self.db_url) as saver:

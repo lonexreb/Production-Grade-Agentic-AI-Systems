@@ -4,12 +4,23 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 2 — HR Agent + Approval + Audit (see PHASE.md). Phase 1 SHIPPED. Phase 2
-core slice SHIPPED: HR agent pauses at approval gate, resumes with decision,
-append-only audit trail. Remaining Phase 2: failure drills (payroll API down,
-tool timeout mid-flow), LLM intent detection, approval API surface.
+Phase 2 — HR Agent + Approval + Audit (see PHASE.md). Phase 2 essentially
+COMPLETE: approval gate + audit + failure drills + HTTP approval API + optional
+LLM intent. Remaining before calling it shipped: blog post #2 + demo recording
+(the PHASE.md "definition of shipped" needs both).
 
 ## Last Session
+
+- **2026-08-14 (2)** — Phase 2 completion slice. Failure drills
+  (tests/test_hr_failure_drills.py): crash-during-approval-wait (fresh Runtime +
+  rebuilt graph resumes from Postgres alone), transient payroll outage (router
+  retries, effect exactly once), hard outage (run 'failed', zero changes).
+  Engine: pending() exposes the interrupt payload, status() reads runs table.
+  runtime/api.py: create_app(build_graph) — GET /runs/{id} (with pending
+  question), POST /runs/{id}/approve|reject; 409 on double-answer; served per
+  app (apps/hr/api.py, port 8000). Verified LIVE over HTTP: paused in one
+  process, approved from the API server process. LLM intent classifier in HR
+  agent (ANTHROPIC_API_KEY + llm extra; keyword fallback). 23 tests green.
 
 - **2026-08-14** — Phase 1 polish + Phase 2 core. Approval enforcement in router
   (Approval dataclass; ApprovalRequired raised for approve-tier without grant).
@@ -57,14 +68,13 @@ tool timeout mid-flow), LLM intent detection, approval API surface.
 
 ## Next Steps (ordered)
 
-1. Phase 2 failure drills (PHASE.md): payroll API down mid-flow, tool timeout,
-   crash-during-approval-wait test (state 'paused' survives restart — assert it).
-2. Approval API surface: FastAPI POST /runs/{id}/approve|reject wrapping
-   Runtime.resume(decision=...) — makes the pause/resume story demoable over HTTP.
-3. LLM intent detection in HR agent (same optional ANTHROPIC_API_KEY pattern as
-   demo planner).
-4. Review/publish the blog draft (docs/blog/2026-08-14-...md) + record demo GIF
+1. Blog post #2 draft: "Human-in-the-loop that survives a restart" (the HR
+   approval story: interrupt + paused status + cross-process HTTP approval).
+2. Review/publish blog draft #1 (docs/blog/2026-08-14-...md) + record demo GIFs
    (vhs or asciinema — needs a brew install, ask user).
+3. Tag v0.2.0 release (Phase 2) once blogs/demos land.
+4. Start Phase 3: memory subsystem (ENTERPRISE.md §4 — evaluate LangMem/Mem0
+   first) + offline eval sets with CI regression gate (§7) + Finance Agent.
 5. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
 
 ## Open Questions

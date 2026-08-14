@@ -10,13 +10,18 @@ dependencies = [
     "opentelemetry-sdk>=1.30",
     "mcp>=2.0.0",
     "opentelemetry-exporter-otlp-proto-http>=1.44.0",
+    "fastapi>=0.141.1",
+    "uvicorn>=0.52.1",
 ]
 
 [project.optional-dependencies]
 llm = ["anthropic>=0.50"]
 
 [dependency-groups]
-dev = ["pytest>=8.0"]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.0",
+]
 
 [build-system]
 requires = ["hatchling"]
