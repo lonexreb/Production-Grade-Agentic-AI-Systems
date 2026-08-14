@@ -2,13 +2,17 @@
 
 One thread per run (thread_id = run_id). State checkpoints at every superstep.
 A killed process resumes by calling run() again with the same run_id and input=None.
+A run paused at interrupt() (human approval) is marked 'paused' and resumes —
+from any process, any time — via resume(decision=...).
 """
 
 from dataclasses import dataclass
+from typing import Any
 
 import psycopg
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.graph import StateGraph
+from langgraph.types import Command
 
 from runtime import config, otel, watchdog
 
@@ -20,11 +24,12 @@ class Runtime:
     def _config(self, run_id: str) -> dict:
         return {"configurable": {"thread_id": run_id}}
 
-    def run(self, builder: StateGraph, input: dict | None, run_id: str) -> dict:
+    def run(self, builder: StateGraph, input: dict | Command | None, run_id: str) -> dict:
         """Start a run, or resume it from the last checkpoint when input is None.
 
         The run is registered in the `runs` table and its lease heartbeats while
         the graph executes; if this process dies, the watchdog revives the run.
+        Returns with '__interrupt__' in the result when paused for human input.
         """
         with psycopg.connect(self.db_url) as conn:
             watchdog.register(conn, run_id)
@@ -42,12 +47,15 @@ class Runtime:
                     with psycopg.connect(self.db_url) as conn:
                         watchdog.mark(conn, run_id, "failed")
                     raise
+        status = "paused" if "__interrupt__" in result else "done"
         with psycopg.connect(self.db_url) as conn:
-            watchdog.mark(conn, run_id, "done")
+            watchdog.mark(conn, run_id, status)
         return result
 
-    def resume(self, builder: StateGraph, run_id: str) -> dict:
-        return self.run(builder, None, run_id)
+    def resume(self, builder: StateGraph, run_id: str, decision: Any = None) -> dict:
+        """Resume a crashed run (decision=None) or answer an interrupt (decision=...)."""
+        input = Command(resume=decision) if decision is not None else None
+        return self.run(builder, input, run_id)
 
     def history(self, run_id: str) -> list[dict]:
         """Checkpoints for a run, newest first: id, timestamp, state values."""

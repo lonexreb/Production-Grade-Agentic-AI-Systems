@@ -36,11 +36,15 @@ referral, Recruiting, Research, and more. Roadmap in [PHASE.md](PHASE.md).
 ## Quickstart
 
 ```bash
-docker compose up -d --wait      # postgres (pgvector) + redis
+docker compose up -d --wait      # postgres (pgvector) + redis + jaeger
 uv sync --group dev
-uv run pytest                    # engine resume, idempotency, tool router
-uv run python -m apps.demo.crash_demo
+uv run pytest                    # engine resume, idempotency, router, approval, audit
+uv run python -m apps.demo.crash_demo   # crash mid-run -> watchdog revives -> 1 effect
+uv run python -m apps.hr.demo           # payroll change gated on human approval
 ```
+
+Traces: set `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` and open the
+Jaeger UI at http://localhost:16686.
 
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
@@ -49,10 +53,18 @@ the run finishes with the side effect executed **exactly once**.
 
 ## Status
 
-Phase 1 (runtime core) — in progress. Shipped so far: durable engine
-(run/resume/replay/history), idempotent side effects (claim → execute → record),
-tool router (manifest, timeout, retry/backoff), OTel GenAI tracing, and the
-crash-resume walking skeleton above.
+**Phase 1 (runtime core) — shipped.** Durable engine (run/resume/replay/history),
+watchdog with run leases (dead runs are detected and revived, not just resumable),
+idempotent side effects (claim → execute → record), tool router with risk tiers
+and an MCP adapter, OTel GenAI tracing with OTLP export.
+
+**Phase 2 (HR Agent + approval + audit) — in progress.** First real app:
+employee email → intent → policy → payroll change → notification. The payroll
+tool is approve-tier — the router refuses it without a granting `Approval`, and
+the graph obtains one by pausing at `interrupt()`. Paused runs are fully
+checkpointed: they survive restarts and resume from any process with the
+manager's decision. Every consequential event lands in an append-only audit log
+whose immutability is enforced by a database trigger, not convention.
 
 ## Docs
 

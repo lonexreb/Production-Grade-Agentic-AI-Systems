@@ -20,11 +20,16 @@ from runtime import config
 DDL = """
 CREATE TABLE IF NOT EXISTS runs (
     run_id           text PRIMARY KEY,
-    status           text NOT NULL CHECK (status IN ('running', 'done', 'failed')),
+    status           text NOT NULL,
     lease_expires_at timestamptz NOT NULL,
     updated_at       timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE runs DROP CONSTRAINT IF EXISTS runs_status_check;
+ALTER TABLE runs ADD CONSTRAINT runs_status_check
+    CHECK (status IN ('running', 'paused', 'done', 'failed'));
 """
+# 'paused' = stopped at interrupt(), awaiting a human decision. No live process,
+# no lease — and NOT dead: dead_runs() only looks at 'running'.
 
 DEFAULT_LEASE_S = int(os.environ.get("OAOS_LEASE_S", "30"))
 

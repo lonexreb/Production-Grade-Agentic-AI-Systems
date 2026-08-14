@@ -4,11 +4,23 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 1 — Runtime Core (see PHASE.md). Modules 1, 2, 3, 6 SHIPPED: crash-resume
-acceptance demo passes with watchdog-driven recovery (kill mid-run → lease expires
-→ watchdog revives → exactly one side effect).
+Phase 2 — HR Agent + Approval + Audit (see PHASE.md). Phase 1 SHIPPED. Phase 2
+core slice SHIPPED: HR agent pauses at approval gate, resumes with decision,
+append-only audit trail. Remaining Phase 2: failure drills (payroll API down,
+tool timeout mid-flow), LLM intent detection, approval API surface.
 
 ## Last Session
+
+- **2026-08-14** — Phase 1 polish + Phase 2 core. Approval enforcement in router
+  (Approval dataclass; ApprovalRequired raised for approve-tier without grant).
+  runtime/audit.py (append-only audit_log; UPDATE/DELETE rejected by pg trigger).
+  Engine: 'paused' status when result has __interrupt__; resume(decision=...)
+  wraps langgraph Command(resume=...). apps/hr/: intent → policy →
+  request_approval → payroll (interrupt() first statement of gated node; effect
+  via execute_once) → notify; demo shows approve + reject with audit trails.
+  Jaeger in compose (UI :16686, OTLP :4318) — verified traces arrive; chose over
+  Langfuse (1 container vs 5; swap when token-cost views matter). Blog draft in
+  docs/blog/. CI runs hr demo too. 16 tests green.
 
 - **2026-08-12 (3)** — Completed Phase 1 core. Watchdog (runs table + lease
   heartbeat in engine; Watchdog.dead_runs/revive_dead; crash_demo now recovers via
@@ -45,15 +57,15 @@ acceptance demo passes with watchdog-driven recovery (kill mid-run → lease exp
 
 ## Next Steps (ordered)
 
-1. Record the crash-resume demo (asciinema/GIF) + Phase 1 blog post draft
-   ("Checkpoints are not durable execution").
-2. Langfuse in docker-compose as the trace viewer (OTLP endpoint already wired via
-   OTEL_EXPORTER_OTLP_ENDPOINT).
-3. Persistent MCP session pool in mcp_adapter (current: session per call, ~1s
-   overhead) — only if demo latency starts to matter.
-4. Start Phase 2: HR Agent skeleton + risk-tier enforcement in the router
-   (approve-tier tools currently unenforced — router accepts them; interrupt()
-   gating lands with Phase 2).
+1. Phase 2 failure drills (PHASE.md): payroll API down mid-flow, tool timeout,
+   crash-during-approval-wait test (state 'paused' survives restart — assert it).
+2. Approval API surface: FastAPI POST /runs/{id}/approve|reject wrapping
+   Runtime.resume(decision=...) — makes the pause/resume story demoable over HTTP.
+3. LLM intent detection in HR agent (same optional ANTHROPIC_API_KEY pattern as
+   demo planner).
+4. Review/publish the blog draft (docs/blog/2026-08-14-...md) + record demo GIF
+   (vhs or asciinema — needs a brew install, ask user).
+5. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
 
 ## Open Questions
 

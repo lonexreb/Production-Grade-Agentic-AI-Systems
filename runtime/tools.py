@@ -1,8 +1,8 @@
 """Module 3: tool router — one gateway between agents and the outside world.
 
 Every tool carries a manifest: timeout, retry policy, risk tier. Calls are traced.
-# ponytail: local-callable tools only; the MCP client adapter is the next slice
-# (same Tool interface, fn becomes an MCP session call).
+Approve-tier tools are ENFORCED here (module 5): the router refuses to execute
+them without an Approval — graphs obtain one from a human via interrupt().
 """
 
 import random
@@ -25,8 +25,21 @@ class Tool:
     risk_tier: RiskTier = "auto"
 
 
+@dataclass(frozen=True)
+class Approval:
+    """A human decision authorizing one approve-tier tool call."""
+
+    approved: bool
+    by: str
+    note: str = ""
+
+
 class ToolError(Exception):
     """Raised after the retry budget is exhausted."""
+
+
+class ApprovalRequired(Exception):
+    """An approve-tier tool was called without a granting Approval."""
 
 
 @dataclass
@@ -38,10 +51,16 @@ class ToolRouter:
             raise ValueError(f"tool already registered: {tool.name}")
         self.tools[tool.name] = tool
 
-    def call(self, name: str, run_id: str = "", **kwargs: Any) -> Any:
+    def call(
+        self, name: str, run_id: str = "", approval: Approval | None = None, **kwargs: Any
+    ) -> Any:
         tool = self.tools.get(name)
         if tool is None:
             raise ToolError(f"unknown tool: {name}")
+        if tool.risk_tier == "approve" and not (approval and approval.approved):
+            raise ApprovalRequired(
+                f"{name} is approve-tier and has no granting approval"
+            )
 
         last_err: Exception | None = None
         for attempt in range(tool.max_retries + 1):

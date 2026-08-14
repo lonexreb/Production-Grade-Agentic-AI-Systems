@@ -20,5 +20,15 @@ services:
     ports:
       - "6380:6379"
 
+  jaeger:
+    # Local trace viewer: UI at http://localhost:16686, OTLP/HTTP on 4318.
+    # Point the runtime at it with OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+    # ponytail: one container beats Langfuse's five-service stack; swap when
+    # LLM-specific views (token cost per trace) earn the extra services.
+    image: jaegertracing/jaeger:2.4.0
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
 volumes:
   pgdata:
