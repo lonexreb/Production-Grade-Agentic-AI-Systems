@@ -23,6 +23,8 @@ class Tool:
     timeout_s: float = 30.0
     max_retries: int = 2
     risk_tier: RiskTier = "auto"
+    fallback: str | None = None  # tool to try when this one exhausts its retries;
+    #                              must accept the same kwargs
 
 
 @dataclass(frozen=True)
@@ -52,7 +54,8 @@ class ToolRouter:
         self.tools[tool.name] = tool
 
     def call(
-        self, name: str, run_id: str = "", approval: Approval | None = None, **kwargs: Any
+        self, name: str, run_id: str = "", approval: Approval | None = None,
+        _tried: frozenset[str] = frozenset(), **kwargs: Any
     ) -> Any:
         tool = self.tools.get(name)
         if tool is None:
@@ -82,4 +85,9 @@ class ToolRouter:
                     last_err = e
             if attempt < tool.max_retries:
                 time.sleep(min(2**attempt, 10) + random.uniform(0, 0.3))
+
+        # ladder step: retries exhausted -> fallback tool (same kwargs contract)
+        if tool.fallback and tool.fallback not in _tried:
+            return self.call(tool.fallback, run_id=run_id, approval=approval,
+                             _tried=_tried | {name}, **kwargs)
         raise ToolError(f"{name} failed after {tool.max_retries + 1} attempts") from last_err

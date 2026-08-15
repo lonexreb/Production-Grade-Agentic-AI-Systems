@@ -29,5 +29,7 @@ jobs:
       - run: uv run python -m apps.demo.crash_demo
       - run: uv run python -m apps.hr.demo
       - run: uv run python -m apps.finance.demo
+      - run: uv run python -m apps.itops.demo
       - run: uv run python -m runtime.evals benchmarks/hr
       - run: uv run python -m runtime.evals benchmarks/finance
+      - run: uv run python -m runtime.evals benchmarks/itops

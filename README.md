@@ -58,6 +58,10 @@ Jaeger UI at http://localhost:16686.
 
 ![Finance memory demo](docs/media/finance-demo.gif)
 
+### The failure-recovery ladder: fallback, rollback, escalate
+
+![IT Ops ladder demo](docs/media/itops-demo.gif)
+
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves
@@ -80,14 +84,24 @@ an append-only audit log whose immutability is enforced by a database trigger,
 not convention. CI drills the failure paths: crash during approval wait,
 transient and hard payroll-API outages.
 
-**Phase 3 (memory + evaluation + Finance Agent) — in progress.** Three-tier
+**Phase 3 (memory + evaluation + Finance Agent) — shipped (v0.3.0).** Three-tier
 agent memory (episodic / semantic / procedural, all Postgres) drives risk-based
 approval in the Finance Agent: unknown vendors and fraud histories see a human;
 verified vendors under the limit clear on audited policy approval. The memory
 benefit is a CI-gated benchmark — human touches drop from 1 to 0 on repeat
-invoices — alongside offline eval suites for both apps
+invoices — alongside offline eval suites per app
 (`python -m runtime.evals benchmarks/<app>`). The Finance Agent shipped without
 modifying a line of `runtime/` — the reuse bet, proven.
+
+**Phase 4 (IT Ops Agent + the full recovery ladder) — in progress.** The ladder
+(`timeout → retry → fallback → rollback → escalate → resume`) is now entirely
+runtime-level: tools declare a `fallback` in their manifest (cycle-guarded, same
+kwargs contract), and `compensate_run` gives saga-style rollback over the
+side-effect ledger — applied fixes that fail verification are undone, the
+`compensated` record kept forever. The IT Ops agent drives it end-to-end:
+restart fixes it (zero touches), unreachable device falls back to a profile
+reset (zero touches), nothing works → rollback to the byte-identical
+pre-incident profile and escalate to a human.
 
 ## Docs
 

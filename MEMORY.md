@@ -4,13 +4,25 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 3 — Memory + Evaluation + Finance Agent (see PHASE.md). Core SHIPPED:
-three-tier memory, eval harness with CI gates, Finance Agent with the measured
-memory benchmark (human touches 1 → 0 on repeat invoices). Zero runtime/
-changes for the second app — reuse proven. Remaining: v0.3.0 tag after CI
-green; user review of blog draft #3.
+Phase 4 — one app per slice, each funding a runtime improvement (see PHASE.md
+table). IT Ops slice SHIPPED (pending v0.4.0 tag after CI): the recovery
+ladder's fallback + rollback rungs are now runtime-level. Next app candidates:
+Customer Support (concurrency → shadow evals) or SWE agent (long runs,
+sandboxing).
 
 ## Last Session
+
+- **2026-08-15 (2)** — Phase 4a: IT Ops. Runtime: Tool.fallback (router routes
+  to fallback after retry exhaustion; same-kwargs contract; _tried frozenset
+  guards cycles) + side_effects.compensate_run(run_id, handlers) — saga
+  rollback in reverse done_at order, rows flip to 'compensated' (status CHECK
+  extended via idempotent constraint swap), no-handler effects skipped
+  deliberately. apps/itops/: runbook from prompt_store (version audited) → fix
+  via execute_once (restart_vpn -> fallback reset_profile) → verify →
+  rollback → escalate interrupt → resolve; simulated fleet in device_state
+  (reachable/fixable_by decide outcomes). Demo GIF (3 ladder endings). Evals
+  3/3 incl. profile-restored-byte-identical assert. Blog draft #4. 35 tests.
+- **2026-08-15 (1)** — Phase 3 SHIPPED (v0.3.0). Memory + evals + Finance.
 
 - **2026-08-15** — Phase 3 core. runtime/memory.py: episodic (FTS recall now,
   pgvector column ready — embed+backfill when an embedding key exists; note

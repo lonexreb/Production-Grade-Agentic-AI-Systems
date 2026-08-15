@@ -19,12 +19,18 @@ DDL = """
 CREATE TABLE IF NOT EXISTS side_effects (
     key        text PRIMARY KEY,
     run_id     text NOT NULL,
-    status     text NOT NULL CHECK (status IN ('pending', 'done')),
+    status     text NOT NULL,
     result     jsonb,
     created_at timestamptz NOT NULL DEFAULT now(),
     done_at    timestamptz
 );
+ALTER TABLE side_effects DROP CONSTRAINT IF EXISTS side_effects_status_check;
+ALTER TABLE side_effects ADD CONSTRAINT side_effects_status_check
+    CHECK (status IN ('pending', 'done', 'compensated'));
 """
+# 'compensated' = the effect was applied, then undone by compensate_run (saga
+# rollback). The row stays — the history that something happened and was
+# reversed is audit-relevant, and the key must never be reusable.
 
 
 def ensure_schema(conn: psycopg.Connection) -> None:
@@ -65,3 +71,34 @@ def execute_once(conn: psycopg.Connection, key: str, run_id: str, fn: Callable[[
     )
     conn.commit()
     return result
+
+
+def compensate_run(
+    conn: psycopg.Connection, run_id: str, handlers: dict[str, Callable[[Any], None]]
+) -> list[str]:
+    """Saga rollback: undo a run's completed effects in reverse order.
+
+    handlers maps node name (the middle segment of the key) to an undo function
+    receiving the stored result. Effects without a handler are skipped — not
+    every effect is reversible, and pretending otherwise is worse than saying so.
+    Returns the keys that were compensated.
+    """
+    rows = conn.execute(
+        "SELECT key, result FROM side_effects"
+        " WHERE run_id = %s AND status = 'done' ORDER BY done_at DESC",
+        (run_id,),
+    ).fetchall()
+
+    compensated = []
+    for key, result in rows:
+        node = key.split(":")[1]
+        undo = handlers.get(node)
+        if undo is None:
+            continue
+        undo(result)
+        conn.execute(
+            "UPDATE side_effects SET status = 'compensated' WHERE key = %s", (key,)
+        )
+        conn.commit()
+        compensated.append(key)
+    return compensated

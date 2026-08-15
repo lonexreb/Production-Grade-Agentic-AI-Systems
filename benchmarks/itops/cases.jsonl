@@ -1,0 +1,3 @@
+{"name": "restart-resolves-zero-touch", "input": {"reachable": true, "fixable_by": "restart"}, "expect": {"human_touches": 0, "ticket_status": "resolved", "response_contains": "restart_vpn", "compensated_effects": 0}}
+{"name": "fallback-resolves-unreachable", "input": {"reachable": false, "fixable_by": "reset"}, "expect": {"human_touches": 0, "ticket_status": "resolved", "response_contains": "reset_profile", "compensated_effects": 0}}
+{"name": "rollback-then-escalate", "input": {"reachable": false, "fixable_by": "none", "decision": {"approved": true, "by": "lead@corp.example", "assign_to": "tech-north"}}, "expect": {"human_touches": 1, "ticket_status": "escalated", "profile": "corp-v1", "compensated_effects": 1}}

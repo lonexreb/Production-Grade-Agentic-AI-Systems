@@ -39,3 +39,18 @@ def test_timeout_enforced():
 def test_unknown_tool():
     with pytest.raises(ToolError, match="unknown tool"):
         ToolRouter().call("nope")
+
+
+def test_fallback_tool_used_after_retries_exhausted():
+    r = ToolRouter()
+    r.register(Tool(name="primary", fn=lambda x: 1 / 0, max_retries=0, fallback="backup"))
+    r.register(Tool(name="backup", fn=lambda x: f"backup:{x}", max_retries=0))
+    assert r.call("primary", x="a") == "backup:a"
+
+
+def test_fallback_cycle_terminates():
+    r = ToolRouter()
+    r.register(Tool(name="a", fn=lambda: 1 / 0, max_retries=0, fallback="b"))
+    r.register(Tool(name="b", fn=lambda: 1 / 0, max_retries=0, fallback="a"))
+    with pytest.raises(ToolError):
+        r.call("a")  # must raise, not recurse forever
