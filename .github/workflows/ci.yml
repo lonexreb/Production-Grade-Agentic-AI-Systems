@@ -28,3 +28,6 @@ jobs:
       - run: uv run pytest -q
       - run: uv run python -m apps.demo.crash_demo
       - run: uv run python -m apps.hr.demo
+      - run: uv run python -m apps.finance.demo
+      - run: uv run python -m runtime.evals benchmarks/hr
+      - run: uv run python -m runtime.evals benchmarks/finance

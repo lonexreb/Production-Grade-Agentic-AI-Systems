@@ -54,6 +54,10 @@ Jaeger UI at http://localhost:16686.
 
 ![HR approval demo](docs/media/hr-demo.gif)
 
+### Memory turns the second invoice into a zero-touch payment
+
+![Finance memory demo](docs/media/finance-demo.gif)
+
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves
@@ -66,13 +70,24 @@ watchdog with run leases (dead runs are detected and revived, not just resumable
 idempotent side effects (claim → execute → record), tool router with risk tiers
 and an MCP adapter, OTel GenAI tracing with OTLP export.
 
-**Phase 2 (HR Agent + approval + audit) — in progress.** First real app:
+**Phase 2 (HR Agent + approval + audit) — shipped (v0.2.0).** First real app:
 employee email → intent → policy → payroll change → notification. The payroll
 tool is approve-tier — the router refuses it without a granting `Approval`, and
 the graph obtains one by pausing at `interrupt()`. Paused runs are fully
-checkpointed: they survive restarts and resume from any process with the
-manager's decision. Every consequential event lands in an append-only audit log
-whose immutability is enforced by a database trigger, not convention.
+checkpointed: they survive restarts and resume from any process (HTTP approval
+API included) with the manager's decision. Every consequential event lands in
+an append-only audit log whose immutability is enforced by a database trigger,
+not convention. CI drills the failure paths: crash during approval wait,
+transient and hard payroll-API outages.
+
+**Phase 3 (memory + evaluation + Finance Agent) — in progress.** Three-tier
+agent memory (episodic / semantic / procedural, all Postgres) drives risk-based
+approval in the Finance Agent: unknown vendors and fraud histories see a human;
+verified vendors under the limit clear on audited policy approval. The memory
+benefit is a CI-gated benchmark — human touches drop from 1 to 0 on repeat
+invoices — alongside offline eval suites for both apps
+(`python -m runtime.evals benchmarks/<app>`). The Finance Agent shipped without
+modifying a line of `runtime/` — the reuse bet, proven.
 
 ## Docs
 

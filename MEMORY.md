@@ -4,12 +4,25 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 2 — HR Agent + Approval + Audit (see PHASE.md). Phase 2 essentially
-COMPLETE: approval gate + audit + failure drills + HTTP approval API + optional
-LLM intent. Remaining before calling it shipped: blog post #2 + demo recording
-(the PHASE.md "definition of shipped" needs both).
+Phase 3 — Memory + Evaluation + Finance Agent (see PHASE.md). Core SHIPPED:
+three-tier memory, eval harness with CI gates, Finance Agent with the measured
+memory benchmark (human touches 1 → 0 on repeat invoices). Zero runtime/
+changes for the second app — reuse proven. Remaining: v0.3.0 tag after CI
+green; user review of blog draft #3.
 
 ## Last Session
+
+- **2026-08-15** — Phase 3 core. runtime/memory.py: episodic (FTS recall now,
+  pgvector column ready — embed+backfill when an embedding key exists; note
+  Anthropic has no embedding API), semantic (append-only, supersede_fact),
+  procedural (versioned prompt_store). Decision: hand-rolled over LangMem/Mem0
+  (both impose storage layers + LLM extraction we don't need). apps/finance/:
+  parse → verify_vendor (semantic) → fraud_check (episodic) → conditional
+  human_gate | policy_approve → pay (approve-tier, execute_once) → record
+  (writes memory; rejected vendors NOT remembered). Policy approvals audited as
+  policy:verified-vendor-under-limit. runtime/evals.py: generic jsonl runner,
+  benchmarks/<app>/harness.run_case(), exit-1 CI gate; hr + finance suites 3/3
+  each. Finance demo GIF recorded. Blog draft #3. 30 tests green.
 
 - **2026-08-14 (3)** — Phase 2 SHIPPED (v0.2.0). Blog draft #2 ("HITL that
   survives a restart", docs/blog/). VHS installed via brew; demo GIFs recorded
@@ -74,11 +87,15 @@ LLM intent. Remaining before calling it shipped: blog post #2 + demo recording
 
 ## Next Steps (ordered)
 
-1. USER: review blog drafts #1 and #2 (docs/blog/) before publishing anywhere —
-   both are in-repo and linked-ready, publishing platform still undecided.
-2. Start Phase 3: memory subsystem (ENTERPRISE.md §4 — evaluate LangMem/Mem0
-   first) + offline eval sets with CI regression gate (§7) + Finance Agent.
-3. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
+1. Tag v0.3.0 once CI is green on the Phase 3 commit.
+2. USER: review blog drafts #1–#3 (docs/blog/) before publishing anywhere —
+   publishing platform still undecided.
+3. Phase 4 planning: pick next app by what it stresses (PHASE.md table) — IT Ops
+   (auto-remediation/rollback) or Customer Support (concurrency → shadow evals)
+   are the strongest interview stories.
+4. Embedding backfill for episodic memory when an embedding API key is
+   configured (OpenAI/Voyage — Anthropic has none); swap recall FTS → pgvector.
+5. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
 
 ## Open Questions
 

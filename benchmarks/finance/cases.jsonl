@@ -1,0 +1,3 @@
+{"name": "memory-eliminates-second-touch", "input": {"amount": 300.0, "decision": {"approved": true, "by": "cfo@corp.example"}}, "expect": {"human_touches_first": 1, "human_touches_second": 0, "payments": 2, "response_contains": "policy:verified-vendor-under-limit"}}
+{"name": "large-repeat-invoice-still-gated", "input": {"amount": 300.0, "second_amount": 50000.0, "decision": {"approved": true, "by": "cfo@corp.example"}}, "expect": {"human_touches_first": 1, "human_touches_second": 1, "payments": 2}}
+{"name": "rejected-vendor-not-remembered", "input": {"amount": 300.0, "decision": {"approved": false, "by": "cfo@corp.example"}}, "expect": {"human_touches_first": 1, "human_touches_second": 1, "payments": 0}}
