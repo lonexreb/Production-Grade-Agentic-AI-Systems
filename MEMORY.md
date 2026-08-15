@@ -11,6 +11,12 @@ LLM intent. Remaining before calling it shipped: blog post #2 + demo recording
 
 ## Last Session
 
+- **2026-08-14 (3)** — Phase 2 SHIPPED (v0.2.0). Blog draft #2 ("HITL that
+  survives a restart", docs/blog/). VHS installed via brew; demo GIFs recorded
+  (docs/media/crash-demo.gif, hr-demo.gif; tapes committed for re-recording)
+  and embedded in README. otel.configure(): console exporter now opt-in via
+  OAOS_TRACE_CONSOLE=1 (was flooding demo output); default is record-no-export,
+  OTLP when endpoint set. Tagged v0.2.0.
 - **2026-08-14 (2)** — Phase 2 completion slice. Failure drills
   (tests/test_hr_failure_drills.py): crash-during-approval-wait (fresh Runtime +
   rebuilt graph resumes from Postgres alone), transient payroll outage (router
@@ -68,14 +74,11 @@ LLM intent. Remaining before calling it shipped: blog post #2 + demo recording
 
 ## Next Steps (ordered)
 
-1. Blog post #2 draft: "Human-in-the-loop that survives a restart" (the HR
-   approval story: interrupt + paused status + cross-process HTTP approval).
-2. Review/publish blog draft #1 (docs/blog/2026-08-14-...md) + record demo GIFs
-   (vhs or asciinema — needs a brew install, ask user).
-3. Tag v0.2.0 release (Phase 2) once blogs/demos land.
-4. Start Phase 3: memory subsystem (ENTERPRISE.md §4 — evaluate LangMem/Mem0
+1. USER: review blog drafts #1 and #2 (docs/blog/) before publishing anywhere —
+   both are in-repo and linked-ready, publishing platform still undecided.
+2. Start Phase 3: memory subsystem (ENTERPRISE.md §4 — evaluate LangMem/Mem0
    first) + offline eval sets with CI regression gate (§7) + Finance Agent.
-5. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
+3. Persistent MCP session pool in mcp_adapter — only if latency starts to matter.
 
 ## Open Questions
 

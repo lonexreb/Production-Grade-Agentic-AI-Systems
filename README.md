@@ -46,6 +46,14 @@ uv run python -m apps.hr.demo           # payroll change gated on human approval
 Traces: set `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` and open the
 Jaeger UI at http://localhost:16686.
 
+### Crash mid-run → watchdog revives → exactly one side effect
+
+![crash-resume demo](docs/media/crash-demo.gif)
+
+### Payroll change pauses for human approval, with audit trail
+
+![HR approval demo](docs/media/hr-demo.gif)
+
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves

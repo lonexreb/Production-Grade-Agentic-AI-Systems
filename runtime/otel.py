@@ -25,7 +25,9 @@ def configure(service_name: str = "openagentos") -> None:
     """Idempotent tracer setup.
 
     Exports OTLP/HTTP when OTEL_EXPORTER_OTLP_ENDPOINT is set (works with
-    Langfuse, LangSmith, Grafana, any OTLP backend); console otherwise.
+    Langfuse, LangSmith, Grafana, any OTLP backend). Set OAOS_TRACE_CONSOLE=1
+    to dump spans to stdout instead (debugging only — it floods demo output).
+    Otherwise spans are recorded but not exported.
     """
     import os
 
@@ -36,10 +38,13 @@ def configure(service_name: str = "openagentos") -> None:
         from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
         exporter = OTLPSpanExporter()  # reads endpoint/headers from standard OTEL_* env
-    else:
+    elif os.environ.get("OAOS_TRACE_CONSOLE"):
         exporter = ConsoleSpanExporter()
+    else:
+        exporter = None
     provider = TracerProvider(resource=Resource.create({"service.name": service_name}))
-    provider.add_span_processor(BatchSpanProcessor(exporter))
+    if exporter is not None:
+        provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
     _configured = True
 
