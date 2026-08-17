@@ -77,3 +77,22 @@ improvement:
 
 Order is negotiable; pick by demand/interview relevance at the time. Temporal backend,
 Kubernetes, and multi-tenant RBAC enter here when their ENTERPRISE.md triggers fire.
+
+## Phase 5 — The frontier (research-driven, Aug 2026)
+
+Grounded in docs/research/2026-08-17-level-up-landscape.md. Ordered by leverage:
+
+1. **ITBench entry (flagship)** — run the IT Ops agent against IBM's public
+   ITBench SRE scenarios (frontier agents resolve only 13.8%). Requires real
+   telemetry ingestion (alerts/traces/topology as agent inputs). Definition of
+   shipped: a reproducible score + write-up.
+2. **Canary mode** — shadow's successor: route N% of live runs to a candidate,
+   compare metric streams, auto-rollback on degradation.
+3. **Path-level policy engine** — risk tiers become rules over run history
+   (AgentSpec-style "policies on paths"), enforced in the router; audit trail
+   as the evidence stream.
+4. **A2A layer** — expose apps as A2A v1.0 agents (signed cards); the Startup
+   CTO orchestrator becomes an A2A client delegating across them.
+5. **Temporal execution backend** — the ENTERPRISE.md trigger has fired
+   (LangGraph + Temporal is now the standard production stack); implement the
+   pluggable backend behind Runtime.
