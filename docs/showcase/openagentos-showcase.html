@@ -1,0 +1,506 @@
+<meta charset="utf-8">
+<title>OpenAgentOS — Production Agentic AI, Replayed</title>
+<style>:root {
+  --ground: #eef1f4;
+  --surface: #ffffff;
+  --surface2: #e4e9ee;
+  --line: #ccd4dc;
+  --text: #1a2229;
+  --muted: #5c6a76;
+  --accent: #b87a1e;
+  --accent-soft: rgba(184, 122, 30, 0.12);
+  --good: #2e7d5b;
+  --bad: #b04a4a;
+  --info: #3d6fa3;
+  --node-live: #b87a1e;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --display: "Avenir Next", Avenir, Futura, "Century Gothic", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    --ground: #101418;
+    --surface: #1a2027;
+    --surface2: #232b34;
+    --line: #2e3944;
+    --text: #e8edf2;
+    --muted: #8a96a3;
+    --accent: #e8a33d;
+    --accent-soft: rgba(232, 163, 61, 0.14);
+    --good: #5fb88a;
+    --bad: #d96a6a;
+    --info: #6aa3d9;
+    --node-live: #e8a33d;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #101418;
+  --surface: #1a2027;
+  --surface2: #232b34;
+  --line: #2e3944;
+  --text: #e8edf2;
+  --muted: #8a96a3;
+  --accent: #e8a33d;
+  --accent-soft: rgba(232, 163, 61, 0.14);
+  --good: #5fb88a;
+  --bad: #d96a6a;
+  --info: #6aa3d9;
+  --node-live: #e8a33d;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+a { color: var(--accent); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- header ---------- */
+header.hero { padding: 48px 0 28px; border-bottom: 1px solid var(--line); }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 46px);
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  margin: 10px 0 12px;
+  text-wrap: balance;
+}
+.hero p.lede { max-width: 62ch; color: var(--muted); margin: 0 0 22px; }
+.statrow { display: flex; flex-wrap: wrap; gap: 12px; }
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 16px;
+  min-width: 118px;
+}
+.stat b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.stat span { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+
+/* ---------- layout ---------- */
+.main { display: grid; grid-template-columns: 236px 1fr; gap: 28px; padding: 30px 0 80px; }
+@media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+
+nav.rail { position: sticky; top: 16px; align-self: start; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 900px) { nav.rail { position: static; flex-direction: row; flex-wrap: wrap; } }
+.railbtn {
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.railbtn .ph {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.75;
+  min-width: 26px;
+}
+.railbtn:hover { color: var(--text); background: var(--surface); }
+.railbtn.active {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--line);
+  border-left: 3px solid var(--accent);
+  padding-left: 10px;
+}
+.railbtn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- case stage ---------- */
+.case { display: none; }
+.case.active { display: block; }
+.case h2 {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+  text-wrap: balance;
+}
+.case .thesis { color: var(--muted); max-width: 68ch; margin: 0 0 8px; }
+.case .runidline { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+.case .runidline b { color: var(--accent); font-weight: 500; }
+
+.variants { display: flex; gap: 8px; margin: 0 0 16px; flex-wrap: wrap; }
+.varbtn {
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 14px;
+  cursor: pointer;
+}
+.varbtn.active { color: var(--ground); background: var(--accent); border-color: var(--accent); }
+
+/* flow rail */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.node {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding: 5px 11px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--surface2);
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.node.live { background: var(--accent); color: var(--ground); border-color: var(--accent); font-weight: 600; }
+.node.done { color: var(--text); border-color: var(--accent); }
+.node.gate { border-style: dashed; }
+.arrow { color: var(--muted); font-size: 12px; opacity: 0.6; padding: 0 2px; }
+@media (prefers-reduced-motion: reduce) { .node { transition: none; } }
+
+/* player */
+.player { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 900px) { .player { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.panel h3 {
+  margin: 0;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.stepbody { padding: 14px 16px; min-height: 150px; }
+.stepbody .steptitle { font-weight: 650; font-size: 15.5px; margin: 0 0 6px; }
+.stepbody .stepnote { color: var(--muted); font-size: 14px; max-width: 58ch; }
+.stepbody .guarantee {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  font-size: 13.5px;
+}
+.guarantee b { color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+
+.controls { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.controls button {
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.controls button:hover { border-color: var(--accent); }
+.controls button:disabled { opacity: 0.4; cursor: default; }
+.controls button.play { background: var(--accent); color: var(--ground); border-color: var(--accent); font-weight: 600; }
+.stepcount { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* audit ledger */
+.ledger { font-family: var(--mono); font-size: 12.5px; max-height: 320px; overflow-y: auto; }
+.levent { display: flex; gap: 10px; padding: 7px 14px; border-bottom: 1px solid var(--line); opacity: 0.35; }
+.levent:last-child { border-bottom: none; }
+.levent.seen { opacity: 1; }
+.levent.current { background: var(--accent-soft); }
+.levent .t { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.levent .actor { color: var(--info); white-space: nowrap; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+.levent .actor.human { color: var(--good); }
+.levent .actor.policy { color: var(--accent); }
+.levent .ev { color: var(--text); }
+.levent .ev.reject { color: var(--bad); }
+
+.payload {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--surface2);
+  padding: 12px 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--muted);
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+}
+.payload .k { color: var(--info); }
+.payload .v { color: var(--text); }
+
+/* diff */
+.diff { font-family: var(--mono); font-size: 12px; overflow-x: auto; padding: 12px 14px; margin: 0; line-height: 1.5; }
+.diff .add { color: var(--good); }
+.diff .del { color: var(--bad); }
+.diff .hunk { color: var(--info); }
+.diff .meta { color: var(--muted); }
+
+/* datatable */
+table.data { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 12.5px; }
+table.data th, table.data td { padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--line); }
+table.data th { color: var(--muted); font-weight: 500; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+table.data td { font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-family: var(--mono); }
+.chip.good { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
+.chip.bad { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
+.chip.acc { background: var(--accent-soft); color: var(--accent); }
+
+/* runtime spine section */
+.spine { margin: 26px 0 8px; }
+.spine h2 { font-family: var(--display); font-size: 20px; margin: 0 0 12px; }
+.modgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.mod { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 11px 13px; }
+.mod b { font-size: 13.5px; display: block; }
+.mod span { font-size: 12.5px; color: var(--muted); }
+.mod .mnum { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+footer { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 13px; }
+footer a { color: var(--accent); }
+.takeaway { margin-top: 14px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; font-size: 14px; max-width: 74ch; }
+.takeaway b { color: var(--accent); }
+</style>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">OpenAgentOS · six patterns · real recorded runs</div>
+  <h1>Production-grade agentic AI, replayed from the audit log</h1>
+  <p class="lede">Every walkthrough below is driven by a <em>real run</em> pulled from the
+  runtime's Postgres — actual audit events, timestamps, decisions, and diffs. Step through each
+  one to see what the runtime guarantees at every moment: durable execution, exactly-once side
+  effects, human approval as state, memory as risk policy, saga rollback, shadow evaluation.</p>
+  <div class="statrow">
+    <div class="stat"><b>6</b><span>tagged releases</span></div>
+    <div class="stat"><b>5</b><span>apps, one runtime</span></div>
+    <div class="stat"><b>42</b><span>tests in CI</span></div>
+    <div class="stat"><b>0</b><span>runtime forks per app</span></div>
+    <div class="stat"><b>1→0</b><span>human touches (memory)</span></div>
+  </div>
+</header>
+<div class="main">
+  <nav class="rail" id="rail" aria-label="cases"></nav>
+  <section id="stage" class="case active" aria-live="polite"></section>
+</div>
+<section class="spine wrap-inner">
+  <h2>The runtime spine every app shares</h2>
+  <div class="modgrid"><div class="mod"><span class="mnum">M1</span><b>Durable Workflow Engine</b><span>LangGraph + Postgres checkpointer; watchdog leases</span></div><div class="mod"><span class="mnum">M2</span><b>State &amp; Checkpointing</b><span>idempotency keys; claim → execute → record</span></div><div class="mod"><span class="mnum">M3</span><b>Tool Router</b><span>risk tiers, retries, fallbacks, MCP adapter</span></div><div class="mod"><span class="mnum">M4</span><b>Agent Memory</b><span>episodic / semantic / procedural, all Postgres</span></div><div class="mod"><span class="mnum">M5</span><b>Human Approval</b><span>interrupt() as durable state; HTTP approval API</span></div><div class="mod"><span class="mnum">M6</span><b>Observability</b><span>OTel GenAI semconv; token + cost tracing</span></div><div class="mod"><span class="mnum">M7</span><b>Evaluation</b><span>offline evals, CI gates, shadow mode</span></div><div class="mod"><span class="mnum">M8</span><b>Governance &amp; Audit</b><span>append-only ledger; immutability by trigger</span></div></div>
+</section>
+<footer>
+  Source, demos (GIFs), eval suites, and CI:
+  <a href="https://github.com/lonexreb/Production-Grade-Agentic-AI-Systems">github.com/lonexreb/Production-Grade-Agentic-AI-Systems</a>
+  &nbsp;·&nbsp; Built on LangGraph + Postgres, MCP, OpenTelemetry GenAI conventions.
+</footer>
+</div>
+<script>window.OAOS_CASES = [{"id": "crash", "phase": "Phase 1 \u2014 runtime core (v0.1.0)", "phase_short": "P1", "nav": "Crash \u2192 resume, exactly once", "title": "Kill the process mid-run. The side effect still happens exactly once.", "thesis": "The Phase 1 acceptance test: an agent run is hard-killed (exit 137) <em>after</em> its side effect executes but <em>before</em> the node completes \u2014 the worst-case crash window. The watchdog revives it; the idempotency ledger stops the duplicate. This exact scenario runs in CI on every push.", "nodes": [{"id": "plan", "label": "plan"}, {"id": "act", "label": "act \u26a1"}, {"id": "verify", "label": "verify"}, {"id": "respond", "label": "respond"}], "variants": [{"id": "main", "label": "main", "run_id": "crash-demo-60f3f50f", "steps": [{"node": "plan", "title": "Run starts; every superstep checkpoints to Postgres", "note": "The engine registers the run in the <code>runs</code> table and heartbeats a lease on a background thread. State after each node is durably saved by the LangGraph Postgres checkpointer.", "guarantee": ["Durable execution", "thread_id = run_id; a fresh process can pick this run up from its last checkpoint at any time."]}, {"node": "act", "title": "The side effect executes \u2014 behind an idempotency key", "note": "Before touching the outside world, the runtime claims key <code>crash-demo-60f3f50f:act:0</code> as <code>pending</code>, executes, then records <code>done</code> with the stored result. That row is the receipt.", "guarantee": ["Idempotency", "claim \u2192 execute \u2192 record. A replayed node finds the done row and returns the stored result instead of re-executing."]}, {"node": "act", "title": "\ud83d\udca5 kill -9 \u2014 the process dies before the node completes", "note": "The demo calls <code>os._exit(137)</code> right here. No cleanup handlers run. The checkpoint for this node was never written, so on resume this node must re-run from the top \u2014 which is exactly the dangerous part.", "guarantee": ["The crash window is real", "the effect happened, the node didn't finish. Naive resume would pay twice; most frameworks do."]}, {"node": null, "title": "The lease expires; the watchdog detects a dead run", "note": "No process is heartbeating, so <code>lease_expires_at</code> passes. <code>Watchdog.dead_runs()</code> finds it with <code>status='running' AND lease_expires_at &lt; now()</code> and re-invokes the graph in a fresh process \u2014 resume is supervisor-guaranteed, not caller-hoped.", "guarantee": ["Supervisor resume", "checkpoints alone are save-points. The watchdog is what turns them into recovery."]}, {"node": "act", "title": "The node re-runs \u2014 and the ledger refuses the duplicate", "note": "execute_once finds key <code>\u202660f3f50f:act:0</code> already <code>done</code> and returns the stored result without calling the tool. Database truth: <b>1 effect row</b> for this run.", "guarantee": ["Exactly once", "final state: run status 'done', side-effect status 'done', effect rows = 1."]}, {"node": "respond", "title": "Run completes as if nothing happened", "note": "Verification counts exactly one effect row, the response is produced, and the run is marked done. Total code an app needs to get all of this: wrap the effect in <code>execute_once</code>. The runtime does the rest."}]}], "footer_html": "<div class=\"takeaway\"><b>Why it matters:</b> \"the agent retries on failure\"\n      is easy; <em>not double-charging a customer while retrying</em> is the production problem.\n      Run status <span class=\"chip acc\">done</span> \u00b7\n      side-effect key <span class=\"chip good\">done</span> \u00b7\n      effect rows <span class=\"chip good\">1</span> \u2014 queried live from Postgres.</div>"}, {"id": "hr", "phase": "Phase 2 \u2014 HR agent + approval + audit (v0.2.0)", "phase_short": "P2", "nav": "Payroll change, human-gated", "title": "A payroll change that cannot happen without a human \u2014 even if the server restarts", "thesis": "Employee email \u2192 intent \u2192 policy \u2192 payroll \u2192 notification. The payroll tool is approve-tier: the tool router refuses it without a granting Approval, and the run pauses as <em>durable state</em> until a manager answers over HTTP.", "nodes": [{"id": "intent", "label": "intent"}, {"id": "policy", "label": "policy"}, {"id": "gate", "label": "approval \u23f8", "gate": true}, {"id": "payroll", "label": "payroll \u26a1"}, {"id": "notify", "label": "notify"}], "variants": [{"id": "approved", "label": "Manager approves", "run_id": "hr-test-e31fad4c", "steps": [{"node": "intent", "title": "An employee email arrives; intent is classified", "note": "\u201cI switched banks \u2014 please update my direct deposit.\u201d A light-tier LLM call (routed to a cheap model via OpenRouter) classifies it; a keyword fallback keeps CI secret-free.", "guarantee": ["Cost routing", "callers declare tier=\"light\"|\"heavy\", never a vendor. Classification is not a frontier-model problem."]}, {"node": "policy", "title": "Company policy is retrieved", "note": "Direct-deposit changes require manager approval \u2014 so the graph routes toward the gate."}, {"node": "gate", "title": "The run PAUSES \u2014 approval is state, not a blocked thread", "note": "LangGraph <code>interrupt()</code> checkpoints the full run and the engine marks it <code>paused</code>. No live process, no lease. The manager can answer in five seconds or five days, over HTTP, from any machine.", "audit": {"actor": "agent", "event": "approval_requested", "payload": {"intent": "update_direct_deposit", "policy": "Direct deposit changes require manager approval and take effect next pay cycle.", "employee": "hr-test-e31fad4c@corp.example"}, "t": "01:27:52.717"}, "guarantee": ["Durable HITL", "CI drills crash-during-approval-wait: a fresh process resumes this run from Postgres alone."]}, {"node": "gate", "title": "The manager approves \u2014 the decision resumes the graph", "note": "<code>mgr@corp.example</code> answers via the approval API. The decision arrives as a LangGraph <code>Command(resume=\u2026)</code>; the gated node re-runs and <code>interrupt()</code> returns the verdict.", "audit": {"actor": "mgr@corp.example", "event": "approval_granted", "payload": {"by": "mgr@corp.example", "approved": true}, "t": "01:27:52.747"}, "guarantee": ["Audited authority", "who approved, when, and what they saw \u2014 in the append-only ledger, forever."]}, {"node": "payroll", "title": "The payroll change executes \u2014 approval enforced by the router", "note": "The tool is <b>approve-tier</b>: the router raises <code>ApprovalRequired</code> without a granting Approval. Prompt guardrails are suggestions; raised exceptions are not. The effect itself is wrapped in an idempotency key.", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "update_payroll", "result": {"changed": "update_direct_deposit", "employee": "hr-test-e31fad4c@corp.example"}}, "t": "01:27:52.755"}, "guarantee": ["Enforcement > prompting", "EU AI Act Art. 14 wants human oversight. \u201cWe asked the model nicely\u201d is not an oversight mechanism."]}, {"node": "notify", "title": "The employee is told the change is done", "note": "A notify-tier tool sends the reply; the event is audited.", "audit": {"actor": "agent", "event": "notification_sent", "payload": {"message": "Your update_direct_deposit request was completed.", "notified": "hr-test-e31fad4c@corp.example"}, "t": "01:27:52.759"}}]}, {"id": "rejected", "label": "Manager rejects", "run_id": "hr-test-fa8fbebd", "steps": [{"node": "intent", "title": "An employee email arrives; intent is classified", "note": "\u201cI switched banks \u2014 please update my direct deposit.\u201d A light-tier LLM call (routed to a cheap model via OpenRouter) classifies it; a keyword fallback keeps CI secret-free.", "guarantee": ["Cost routing", "callers declare tier=\"light\"|\"heavy\", never a vendor. Classification is not a frontier-model problem."]}, {"node": "policy", "title": "Company policy is retrieved", "note": "Direct-deposit changes require manager approval \u2014 so the graph routes toward the gate."}, {"node": "gate", "title": "The run PAUSES \u2014 approval is state, not a blocked thread", "note": "LangGraph <code>interrupt()</code> checkpoints the full run and the engine marks it <code>paused</code>. No live process, no lease. The manager can answer in five seconds or five days, over HTTP, from any machine.", "audit": {"actor": "agent", "event": "approval_requested", "payload": {"intent": "update_direct_deposit", "policy": "Direct deposit changes require manager approval and take effect next pay cycle.", "employee": "hr-test-fa8fbebd@corp.example"}, "t": "03:38:40.472"}, "guarantee": ["Durable HITL", "CI drills crash-during-approval-wait: a fresh process resumes this run from Postgres alone."]}, {"node": "gate", "title": "The manager REJECTS \u2014 rejection is a first-class path", "note": "<code>mgr@corp.example</code> declines (\u201cunverified bank\u201d). The graph routes around the payroll node entirely.", "audit": {"actor": "mgr@corp.example", "event": "approval_rejected", "payload": {"by": "mgr@corp.example", "note": "unverified bank", "approved": false}, "t": "03:38:40.498"}, "guarantee": ["Fail closed", "zero payroll rows exist for this run \u2014 verified by the eval suite, not by hope."]}, {"node": "notify", "title": "The employee gets a decline with the reason", "note": "No silent drops: the rejection produces a notification and an audit entry.", "audit": {"actor": "agent", "event": "notification_sent", "payload": {"message": "Your update_direct_deposit request was declined: unverified bank", "notified": "hr-test-fa8fbebd@corp.example"}, "t": "03:38:40.503"}}]}], "footer_html": "<div class=\"takeaway\"><b>Why it matters:</b> most HITL demos are a blocked\n      thread that evaporates on deploy. Here the pause is a checkpoint: CI kills the process\n      mid-wait and proves a fresh process finishes the approval. Immutability is a Postgres\n      trigger \u2014 <code>UPDATE audit_log</code> raises an exception.</div>"}, {"id": "finance", "phase": "Phase 3 \u2014 memory + evaluation (v0.3.0)", "phase_short": "P3", "nav": "Memory: 1 touch \u2192 0 touches", "title": "Agent memory that pays for itself \u2014 and the CI benchmark that proves it", "thesis": "Invoice \u2192 vendor check (semantic memory) \u2192 fraud check (episodic memory) \u2192 risk-routed approval \u2192 payment. First invoice from a vendor: one human approval. Second: zero. The delta is a CI-gated benchmark, not a claim.", "nodes": [{"id": "parse", "label": "parse"}, {"id": "verify", "label": "vendor\u2713 \ud83e\udde0"}, {"id": "fraud", "label": "fraud \ud83e\udde0"}, {"id": "gate", "label": "human \u23f8", "gate": true}, {"id": "policy", "label": "policy\u2713"}, {"id": "pay", "label": "pay \u26a1"}, {"id": "record", "label": "record \ud83e\udde0"}], "variants": [{"id": "human", "label": "Invoice #1 \u2014 unknown vendor", "run_id": "fin-d86baf6d", "steps": [{"node": "verify", "title": "Semantic memory: is this vendor verified?", "note": "No fact exists \u2014 this vendor has never been approved by a human.", "guarantee": ["Memory as risk policy", "unknown vendor \u2192 human. Verified + small + clean history \u2192 policy. Memory reads like an underwriter reads history."]}, {"node": "fraud", "title": "Episodic memory: any fraud history?", "note": "Full-text recall over past run episodes for this vendor. A fraud episode forces the human gate even for verified vendors \u2014 memory that only ever reduces friction is a fraud vector."}, {"node": "gate", "title": "Unknown vendor \u2192 the run pauses for the CFO", "note": "Human touch #1. The same durable-pause machinery as HR.", "guarantee": ["Measured, not vibes", "the eval harness counts human touches per run \u2014 this is the baseline."]}, {"node": "gate", "title": "CFO approves; the vendor will be remembered", "note": "<code>cfo@corp.example</code> grants. On completion the agent writes the semantic fact \u2014 rejected vendors are deliberately NOT remembered.", "audit": {"actor": "cfo@corp.example", "event": "approval_granted", "payload": {"by": "cfo@corp.example", "approved": true}, "t": "03:38:56.229"}}, {"node": "pay", "title": "Payment executes \u2014 approve-tier, idempotent", "note": "Same enforcement and same exactly-once ledger as everything else.", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "pay_invoice", "result": {"paid": "acme-a4bb5d", "amount": 420.0}}, "t": "03:38:56.242"}}, {"node": "record", "title": "The run writes back to memory", "note": "An episodic entry (what happened, outcome) and \u2014 after a first human approval \u2014 the semantic vendor fact. This is how invoice #2 becomes zero-touch."}]}, {"id": "policy", "label": "Invoice #2 \u2014 vendor remembered", "run_id": "fin-f168fb38", "steps": [{"node": "verify", "title": "Semantic memory: is this vendor verified?", "note": "A durable fact exists: <code>vendor: verified</code>, written when a human approved invoice #1. Facts are append-only \u2014 contradicted facts are superseded, never edited.", "guarantee": ["Memory as risk policy", "unknown vendor \u2192 human. Verified + small + clean history \u2192 policy. Memory reads like an underwriter reads history."]}, {"node": "fraud", "title": "Episodic memory: any fraud history?", "note": "Full-text recall over past run episodes for this vendor. A fraud episode forces the human gate even for verified vendors \u2014 memory that only ever reduces friction is a fraud vector."}, {"node": "policy", "title": "No human needed \u2014 policy approval, fully audited", "note": "The gate routes to policy: <code>policy:verified-vendor-under-limit</code> grants automatically for a verified vendor under the $10k limit. The approval is still an audit event \u2014 \u201cwho approved this payment?\u201d never gets a shrug.", "audit": {"actor": "policy:verified-vendor-under-limit", "event": "approval_granted", "payload": {"by": "policy:verified-vendor-under-limit", "amount": 250.0, "vendor": "acme-bf4bf6f6", "approved": true}, "t": "03:50:49.040"}, "guarantee": ["Human touches: 0", "the CI benchmark asserts touches drop 1 \u2192 0 on repeat invoices \u2014 and that big amounts and fraud histories still see a human."]}, {"node": "pay", "title": "Payment executes \u2014 approve-tier, idempotent", "note": "Same enforcement and same exactly-once ledger as everything else.", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "pay_invoice", "result": {"paid": "acme-bf4bf6f6", "amount": 250.0}}, "t": "03:50:49.051"}}, {"node": "record", "title": "The run writes back to memory", "note": "An episodic entry (what happened, outcome) and \u2014 after a first human approval \u2014 the semantic vendor fact. This is how invoice #2 becomes zero-touch."}]}], "footer_html": "<div class=\"takeaway\"><b>The benchmark, in CI on every push:</b>\n      <span class=\"chip good\">memory-eliminates-second-touch: 1 \u2192 0</span>\n      <span class=\"chip acc\">large-repeat-invoice-still-gated: 1 \u2192 1</span>\n      <span class=\"chip acc\">rejected-vendor-not-remembered: payments 0</span> \u2014\n      the guard cases matter as much as the win: memory lowers cost on the happy path\n      and refuses to lower the guard anywhere else.</div>"}, {"id": "itops", "phase": "Phase 4a \u2014 IT Ops + the recovery ladder (v0.4.0)", "phase_short": "P4a", "nav": "Fallback \u2192 rollback \u2192 escalate", "title": "The failure-recovery ladder: three tickets, three different endings", "thesis": "timeout \u2192 retry \u2192 <b>fallback</b> \u2192 <b>rollback</b> \u2192 escalate \u2192 resume. The middle rungs are runtime features: tools declare fallbacks in their manifest, and applied fixes that fail verification are undone via saga compensation over the side-effect ledger.", "nodes": [{"id": "runbook", "label": "runbook \ud83e\udde0"}, {"id": "fix", "label": "auto-fix \u26a1"}, {"id": "verify", "label": "verify"}, {"id": "rollback", "label": "rollback \u21a9"}, {"id": "escalate", "label": "escalate \u23f8", "gate": true}, {"id": "resolve", "label": "resolve"}], "variants": [{"id": "restart", "label": "Restart fixes it", "run_id": "ops-f65b0425", "steps": [{"node": "runbook", "title": "The runbook comes from versioned procedural memory", "note": "Pulled from the prompt store; the exact version the agent followed is audited \u2014 \u201cwhich procedure was in force?\u201d has a queryable answer.", "audit": {"actor": "agent", "event": "runbook_selected", "payload": {"device": "laptop-f65b0425", "runbook": "1. restart vpn service  2. reset network profile  3. escalate"}, "t": "03:30:31.299"}}, {"node": "fix", "title": "Primary tool works: restart_vpn", "note": "The device is reachable and a restart fixes it.", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "restart_vpn", "result": {"action": "restart_vpn", "device": "laptop-f65b0425"}}, "t": "03:30:31.314"}}, {"node": "verify", "title": "Verification against the real device state", "note": "The fix is confirmed, not assumed."}, {"node": "resolve", "title": "Ticket resolved \u2014 zero human touches", "note": "The incident closes itself; an episodic memory entry records the outcome.", "audit": {"actor": "agent", "event": "ticket_updated", "payload": {"status": "resolved", "ticket": "T-f65b0425"}, "t": "03:30:31.329"}, "guarantee": ["Rung 1", "retry was enough. Most tickets should end here."]}]}, {"id": "fallback", "label": "Unreachable \u2192 fallback", "run_id": "ops-dcfafd9b", "steps": [{"node": "runbook", "title": "The runbook comes from versioned procedural memory", "note": "Pulled from the prompt store; the exact version the agent followed is audited \u2014 \u201cwhich procedure was in force?\u201d has a queryable answer.", "audit": {"actor": "agent", "event": "runbook_selected", "payload": {"device": "laptop-dcfafd9b", "runbook": "1. restart vpn service  2. reset network profile  3. escalate"}, "t": "01:15:54.003"}}, {"node": "fix", "title": "Primary tool FAILS \u2014 the device is unreachable", "note": "restart_vpn raises ConnectionError. Retrying harder is just more timeouts.", "guarantee": ["Fallback in the manifest", "Tool(name=\"restart_vpn\", fallback=\"reset_profile\") \u2014 the relationship between tools is runtime data, not prompt hope."]}, {"node": "fix", "title": "The router falls back: reset_profile (out-of-band)", "note": "Same kwargs contract, cycle-guarded, traced. The audit shows which tool actually ran.", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "reset_profile", "result": {"action": "reset_profile", "device": "laptop-dcfafd9b", "prior_profile": "corp-v1"}}, "t": "01:15:54.020"}}, {"node": "verify", "title": "Verified fixed", "note": "The profile reset worked on the unreachable device."}, {"node": "resolve", "title": "Resolved \u2014 still zero human touches", "note": "", "audit": {"actor": "agent", "event": "ticket_updated", "payload": {"status": "resolved", "ticket": "T-dcfafd9b"}, "t": "01:15:54.038"}, "guarantee": ["Rung 2", "a different tool, not a harder retry."]}]}, {"id": "rollback", "label": "Nothing works \u2192 rollback + human", "run_id": "ops-f5a3449d", "steps": [{"node": "runbook", "title": "The runbook comes from versioned procedural memory", "note": "Pulled from the prompt store; the exact version the agent followed is audited \u2014 \u201cwhich procedure was in force?\u201d has a queryable answer.", "audit": {"actor": "agent", "event": "runbook_selected", "payload": {"device": "laptop-f5a3449d", "runbook": "1. restart vpn service  2. reset network profile  3. escalate"}, "t": "03:30:31.439"}}, {"node": "fix", "title": "Fallback applies a change\u2026 ", "note": "reset_profile modifies the device profile (the prior value is captured in the stored result \u2014 that detail is about to matter).", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "reset_profile", "result": {"action": "reset_profile", "device": "laptop-f5a3449d", "prior_profile": "corp-v1"}}, "t": "03:30:31.457"}}, {"node": "verify", "title": "\u2026but verification FAILS", "note": "The user still can't connect. The device is now modified AND broken \u2014 worse than when the ticket opened. Auto-remediation without undo turns one incident into two."}, {"node": "rollback", "title": "Saga rollback: the change is undone", "note": "<code>compensate_run</code> walks the run's completed effects in reverse and calls each undo handler with the stored result. The ledger row flips to <code>compensated</code> and keeps its key forever. The eval suite asserts the profile is byte-identical to its pre-incident value.", "audit": {"actor": "agent", "event": "rollback", "payload": {"fix": "reset_profile", "compensated": ["ops-f5a3449d:fix:0"]}, "t": "03:30:31.473"}, "guarantee": ["Honest reversal", "effects without an undo handler are skipped, not faked \u2014 pretending everything is reversible is worse than saying so."]}, {"node": "escalate", "title": "A human decides what happens next", "note": "The run pauses with the full story: what was tried, what was rolled back, which runbook was followed. <code>lead@corp.example</code> assigns an on-site tech.", "audit": {"actor": "lead@corp.example", "event": "escalation_decided", "payload": {"by": "lead@corp.example", "approved": true, "assign_to": "tech-north"}, "t": "03:30:31.509"}, "guarantee": ["Escalation is the exit", "giving up cleanly is a successful outcome for an agent. Infinite retry loops are not."]}, {"node": "resolve", "title": "Ticket escalated \u2014 with a perfect paper trail", "note": "", "audit": {"actor": "agent", "event": "ticket_updated", "payload": {"status": "escalated", "ticket": "T-f5a3449d"}, "t": "03:30:31.517"}}]}], "footer_html": "<div class=\"takeaway\"><b>Why it matters:</b> an auto-remediation agent that\n      can't prove the device profile is byte-identical after a failed fix shouldn't be allowed near\n      a fleet. Runtime cost of the two new rungs: one field on <code>Tool</code>, one function on\n      the effect ledger.</div>"}, {"id": "support", "phase": "Phase 4b \u2014 shadow evals + concurrency (v0.5.0)", "phase_short": "P4b", "nav": "Shadow evals, zero side effects", "title": "\u201cWhat if we raise the refund limit?\u201d \u2014 answered before deployment, touching nothing", "thesis": "Shadow mode replays recorded cases through a <em>candidate</em> agent build with the router swapped for a double that records intent and cannot call real tools. The policy question becomes a three-line table instead of a production experiment.", "nodes": [{"id": "intent", "label": "intent"}, {"id": "history", "label": "history \ud83e\udde0"}, {"id": "gate", "label": "refund gate", "gate": true}, {"id": "refund", "label": "refund \u26a1"}, {"id": "reply", "label": "reply"}], "variants": [{"id": "main", "label": "main", "run_id": "shadow-candidate-cb717d1b", "steps": [{"node": "intent", "title": "Recorded cases replay through the REAL graph", "note": "Same code, same gates, same memory reads. Only the router is different: a <code>ShadowRouter</code> double answers from stubs.", "guarantee": ["Suppressed by construction", "the real tool functions are unreachable from shadow \u2014 not discouraged, unreachable. Approval gates still enforce."]}, {"node": "gate", "title": "Baseline policy: $75 refund \u2192 human gate", "note": "With the auto-refund limit at $50, the $75 case pauses for a human. The graph builder takes the limit as a parameter \u2014 candidate and baseline are the same code at different settings. No forked agent to drift."}, {"node": "gate", "title": "Candidate policy ($100 limit): $75 \u2192 auto", "note": "The candidate clears it on policy approval. $15 behaves identically in both; $250 is gated in both. That's the entire deployment decision, in one table.", "html": "<table class=\"data\" style=\"margin-top:10px\"><thead>\n               <tr><th>case</th><th>baseline ($50)</th><th>candidate ($100)</th></tr></thead><tbody>\n               <tr><td>$15</td><td><span class=\"chip good\">auto</span></td><td><span class=\"chip good\">auto</span></td></tr>\n               <tr><td>$75</td><td><span class=\"chip bad\">human gate</span></td><td><span class=\"chip good\">auto</span></td></tr>\n               <tr><td>$250</td><td><span class=\"chip bad\">human gate</span></td><td><span class=\"chip bad\">human gate</span></td></tr>\n             </tbody></table>"}, {"node": "refund", "title": "Every intended call is recorded \u2014 none executed", "note": "The shadow_calls table holds what the candidate WOULD have done. Real refund rows created during the whole analysis: zero.", "guarantee": ["Bonus finding", "the 8-way concurrency stress test for this app deadlocked Postgres on its first run \u2014 concurrent DDL taking ACCESS EXCLUSIVE locks. Invisible serially, fatal in parallel. Fixed with advisory-lock-serialized schema setup."], "html": "<table class=\"data\" style=\"margin-top:10px\"><thead>\n               <tr><th>shadow run</th><th>intended tool</th><th>kwargs</th></tr></thead>\n               <tbody><tr><td>shadow-candidate-cb717d1b</td><td>send_reply</td><td>{\"message\": \"Your $75.00 refund is on the way (approved by p\u2026</td></tr><tr><td>shadow-candidate-cb717d1b</td><td>issue_refund</td><td>{\"amount\": 75.0, \"customer\": \"cust-8f1a617f\"}\u2026</td></tr><tr><td>shadow-34f259db</td><td>send_reply</td><td>{\"message\": \"Your $20.00 refund is on the way (approved by p\u2026</td></tr><tr><td>shadow-34f259db</td><td>issue_refund</td><td>{\"amount\": 20.0, \"customer\": \"cust-b5d3d740\"}\u2026</td></tr></tbody></table>"}]}], "footer_html": "<div class=\"takeaway\"><b>Why it matters:</b> shadow deployment normally\n      assumes production traffic. Replaying recorded cases through a router double gives the same\n      answer \u2014 which cases change outcome and what would have been done differently \u2014 with zero\n      risk, before anyone deploys anything.</div>"}, {"id": "swe", "phase": "Phase 4c \u2014 the SWE agent (v0.6.0)", "phase_short": "P4c", "nav": "SWE agent, human-gated merge", "title": "An LLM writes real code. Real tests judge it. A human owns the merge.", "thesis": "issue \u2192 plan \u2192 code \u2192 test (the project's actual pytest suite, in an isolated workspace) \u2192 bounded retry \u2192 LLM review \u2192 human merge gate \u2192 idempotent merge. Everything below is from a real run: real model output, real test results, real diff.", "nodes": [{"id": "plan", "label": "plan"}, {"id": "code", "label": "code \ud83e\udd16"}, {"id": "test", "label": "pytest"}, {"id": "review", "label": "review \ud83e\udd16"}, {"id": "gate", "label": "merge gate \u23f8", "gate": true}, {"id": "merge", "label": "merge \u26a1"}], "variants": [{"id": "main", "label": "main", "run_id": "swe-test-fe0efdbb", "steps": [{"node": "plan", "title": "The model plans against the real repo", "note": "Issue: implement divide() with ValueError on division by zero \u2014 two tests genuinely failing in the sample project. A light-tier model picks the target file.", "audit": {"actor": "agent", "event": "plan_made", "payload": {"plan": "FILE: calculator.py\nPLAN: Add a divide(a, b) function that returns a/b and raises ValueError when b is zero.", "target_file": "calculator.py"}, "t": "03:50:29.473"}}, {"node": "code", "title": "Claude writes the full new file into an isolated workspace", "note": "Per-run workspace, git-baselined. If a previous attempt failed, the pytest output is fed back into the next prompt. Three failed attempts \u2192 the run gives up honestly and escalates \u2014 infinite loops are not a feature.", "audit": {"actor": "agent", "event": "code_written", "payload": {"file": "calculator.py", "attempt": 1}, "t": "03:50:31.510"}}, {"node": "test", "title": "The judge is pytest, not vibes", "note": "The project's real test suite runs in a subprocess. This run: green on attempt 1 \u2014 5 passed, including the two that were failing.", "audit": {"actor": "agent", "event": "tests_run", "payload": {"passed": true, "attempt": 1, "output_tail": ".....                                                                    [100%]\n5 passed in 0.00s"}, "t": "03:50:31.819"}, "guarantee": ["Ground truth", "an LLM opinion never gates progress; a test suite does."]}, {"node": "review", "title": "An LLM reviews the diff \u2014 and finds something real", "note": "Unprompted, the reviewer flagged the float-comparison edge case:<br><em style=\"color:var(--muted)\">\u201cThe implementation is correct and concise: it properly checks for zero divisor before performing division, raising a clear `ValueError` with a descriptive message, and follows the same style/type hints as the other functions in the file (e.g., `subtract`, `mul\u2026\u201d</em>", "audit": {"actor": "agent", "event": "review_done", "payload": {"review": "The implementation is correct and concise: it properly checks for zero divisor before performing division, raising a clear `ValueError` with a descriptive message, and follows the same style/type hints as the other functions in the file (e.g., `subtract`, `multiply`).\n\nA few minor considerations:\n- **Correctness**: The `b == 0` check works for both `int` and `float` zero values, but be aware that floating-point comparisons can be tricky in edge cases (e.g., very small numbers close to zero that aren't exactly `0.0` won't be caught, which is expected behavior but worth noting).\n- **Risk**: No risk of `ZeroDivisionError` leaking since it's explicitly handled; this is consistent with fail-fast design and gives callers a clear, catchable exception.\n- **Style**: Function signature and docstring-less style matches the rest of the file, maintaining consistency. Consider adding a brief docstring if other"}, "t": "03:50:35.684"}}, {"node": "gate", "title": "Nothing merges without a human", "note": "The run pauses with the diff, the review, and the attempt count in the interrupt payload \u2014 answered over the same approval API as payroll and payments.", "audit": {"actor": "maintainer@test", "event": "approval_granted", "payload": {"by": "maintainer@test", "approved": true}, "t": "03:50:35.748"}, "guarantee": ["Same rails as payroll", "the router that refuses an unapproved payment refuses an unapproved merge. ApprovalRequired is model-proof."]}, {"node": "merge", "title": "The merge commits \u2014 exactly once", "note": "Idempotency ledger again: crash after committing but before recording, resume, and there is no duplicate commit. The actual merged diff:", "audit": {"actor": "agent", "event": "tool_call", "payload": {"tool": "merge_change", "result": {"patch": "/Users/shubh-trips/Documents/personal-project/production-autonomous-ai-agents/workspace/swe-test-fe0efdbb/change.patch", "commit": "092f249"}}, "t": "03:50:35.818"}, "html": "<pre class=\"diff\" data-diff-src>commit 092f249dd86067bfe002e3c12e3d88f9a9bb3228\nAuthor: lonexreb &lt;reach2shubhankar@gmail.com&gt;\nDate:   Sun Aug 16 22:50:35 2026 -0500\n\n    fix: Implement divide(a, b) in calculator.py. It must return a/b\n\ndiff --git a/calculator.py b/calculator.py\nindex 63da0bd..23966e7 100644\n--- a/calculator.py\n+++ b/calculator.py\n@@ -11,3 +11,9 @@ def subtract(a: float, b: float) -&gt; float:\n \n def multiply(a: float, b: float) -&gt; float:\n     return a * b\n+\n+\n+def divide(a: float, b: float) -&gt; float:\n+    if b == 0:\n+        raise ValueError(\"Cannot divide by zero\")\n+    return a / b</pre>"}]}], "footer_html": "<div class=\"takeaway\"><b>Why it matters:</b> autonomous coding demos end at\n      \u201cthe model wrote code.\u201d Production starts there: isolation, real test gates, bounded\n      retries, human-owned merges, idempotent side effects, and a full audit trail \u2014 all inherited\n      from the same runtime that runs payroll. Fifth app, zero lines of runtime forked.</div>"}];</script>
+<script>/* OpenAgentOS showcase — step player over real recorded runs. DATA injected at build. */
+"use strict";
+
+const CASES = window.OAOS_CASES; // built server-side from Postgres exports
+
+const stage = document.getElementById("stage");
+const rail = document.getElementById("rail");
+let activeCase = null;
+let activeVariant = null;
+let stepIdx = 0;
+let playTimer = null;
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function fmtPayload(obj) {
+  if (obj == null) return "";
+  const json = JSON.stringify(obj, null, 2);
+  return esc(json).replace(/"([^"]+)":/g, '<span class="k">"$1":</span>');
+}
+
+function fmtDiff(patch) {
+  return patch.split("\n").map(line => {
+    const e = esc(line);
+    if (line.startsWith("+++") || line.startsWith("---")) return `<span class="meta">${e}</span>`;
+    if (line.startsWith("@@")) return `<span class="hunk">${e}</span>`;
+    if (line.startsWith("+")) return `<span class="add">${e}</span>`;
+    if (line.startsWith("-")) return `<span class="del">${e}</span>`;
+    if (line.startsWith("commit") || line.startsWith("Author") || line.startsWith("Date")) return `<span class="meta">${e}</span>`;
+    return e;
+  }).join("\n");
+}
+
+function actorClass(actor) {
+  if (actor.startsWith("policy:")) return "actor policy";
+  if (actor === "agent") return "actor";
+  return "actor human";
+}
+
+function renderCase(caseId, variantId) {
+  const c = CASES.find(x => x.id === caseId);
+  activeCase = c;
+  activeVariant = c.variants.find(v => v.id === variantId) || c.variants[0];
+  stepIdx = 0;
+  stopPlay();
+
+  document.querySelectorAll(".railbtn").forEach(b =>
+    b.classList.toggle("active", b.dataset.case === caseId));
+
+  const v = activeVariant;
+  const variantBtns = c.variants.length > 1
+    ? `<div class="variants" role="tablist">` + c.variants.map(x =>
+        `<button class="varbtn ${x.id === v.id ? "active" : ""}" data-var="${x.id}">${esc(x.label)}</button>`
+      ).join("") + `</div>`
+    : "";
+
+  const flow = `<div class="flow" aria-label="workflow graph">` +
+    c.nodes.map((n, i) =>
+      (i ? `<span class="arrow">&#8594;</span>` : "") +
+      `<span class="node ${n.gate ? "gate" : ""}" data-node="${n.id}">${esc(n.label)}</span>`
+    ).join("") + `</div>`;
+
+  const ledgerRows = v.steps.filter(s => s.audit).map((s, i) =>
+    `<div class="levent" data-step="${v.steps.indexOf(s)}">
+      <span class="t">${esc(s.audit.t || "")}</span>
+      <span class="${actorClass(s.audit.actor)}">${esc(s.audit.actor)}</span>
+      <span class="ev ${/reject/.test(s.audit.event) ? "reject" : ""}">${esc(s.audit.event)}</span>
+    </div>`).join("");
+
+  stage.innerHTML = `
+    <h2>${esc(c.title)}</h2>
+    <p class="thesis">${c.thesis}</p>
+    <p class="runidline">real recorded run: <b>${esc(v.run_id)}</b> &nbsp;·&nbsp; ${esc(c.phase)}</p>
+    ${variantBtns}
+    ${flow}
+    <div class="player">
+      <div class="panel">
+        <h3>Step ${c.extra_panel ? "&amp; artifact" : ""}</h3>
+        <div class="stepbody" id="stepbody"></div>
+        <div class="controls">
+          <button id="prev">&#8592; Prev</button>
+          <button id="next">Next &#8594;</button>
+          <button id="play" class="play">&#9654; Play</button>
+          <span class="stepcount" id="stepcount"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Audit ledger (append-only, from Postgres)</h3>
+        <div class="ledger" id="ledger">${ledgerRows || '<div class="levent seen"><span class="ev">no audit events for this pattern &mdash; see inspector</span></div>'}</div>
+        <h3>Event payload inspector</h3>
+        <pre class="payload" id="payload"></pre>
+      </div>
+    </div>
+    ${c.footer_html || ""}
+  `;
+
+  stage.querySelectorAll(".varbtn").forEach(b =>
+    b.addEventListener("click", () => renderCase(caseId, b.dataset.var)));
+  document.getElementById("prev").addEventListener("click", () => go(stepIdx - 1));
+  document.getElementById("next").addEventListener("click", () => go(stepIdx + 1));
+  document.getElementById("play").addEventListener("click", togglePlay);
+  go(0);
+}
+
+function go(i) {
+  const steps = activeVariant.steps;
+  stepIdx = Math.max(0, Math.min(steps.length - 1, i));
+  const s = steps[stepIdx];
+
+  document.querySelectorAll(".node").forEach(n => {
+    n.classList.remove("live");
+    const passed = steps.slice(0, stepIdx + 1).some(st => st.node === n.dataset.node);
+    n.classList.toggle("done", passed);
+  });
+  if (s.node) {
+    const el = document.querySelector(`.node[data-node="${s.node}"]`);
+    if (el) { el.classList.add("live"); el.classList.remove("done"); }
+  }
+
+  const body = document.getElementById("stepbody");
+  body.innerHTML = `
+    <p class="steptitle">${esc(s.title)}</p>
+    <p class="stepnote">${s.note}</p>
+    ${s.guarantee ? `<div class="guarantee"><b>${esc(s.guarantee[0])}</b>${s.guarantee[1]}</div>` : ""}
+    ${s.html || ""}
+  `;
+
+  document.querySelectorAll(".levent").forEach(le => {
+    const li = Number(le.dataset.step);
+    le.classList.toggle("seen", li <= stepIdx);
+    le.classList.toggle("current", li === stepIdx);
+  });
+  const cur = document.querySelector(".levent.current");
+  if (cur) cur.scrollIntoView({ block: "nearest", behavior: "smooth" });
+
+  document.getElementById("payload").innerHTML = s.audit
+    ? fmtPayload(s.audit.payload)
+    : '<span class="k">// no audit event at this step</span>';
+
+  document.getElementById("stepcount").textContent = `${stepIdx + 1} / ${steps.length}`;
+  document.getElementById("prev").disabled = stepIdx === 0;
+  document.getElementById("next").disabled = stepIdx === steps.length - 1;
+  if (stepIdx === steps.length - 1) stopPlay();
+}
+
+function togglePlay() {
+  if (playTimer) { stopPlay(); return; }
+  if (stepIdx === activeVariant.steps.length - 1) go(0);
+  document.getElementById("play").innerHTML = "&#10073;&#10073; Pause";
+  playTimer = setInterval(() => {
+    if (stepIdx >= activeVariant.steps.length - 1) stopPlay();
+    else go(stepIdx + 1);
+  }, 2600);
+}
+function stopPlay() {
+  clearInterval(playTimer);
+  playTimer = null;
+  const p = document.getElementById("play");
+  if (p) p.innerHTML = "&#9654; Play";
+}
+
+/* rail */
+CASES.forEach(c => {
+  const b = document.createElement("button");
+  b.className = "railbtn";
+  b.dataset.case = c.id;
+  b.innerHTML = `<span class="ph">${esc(c.phase_short)}</span><span>${esc(c.nav)}</span>`;
+  b.addEventListener("click", () => renderCase(c.id));
+  rail.appendChild(b);
+});
+renderCase(CASES[0].id);
+
+/* expose formatters for build-time html in footer panels */
+window.OAOS_fmtDiff = fmtDiff;
+document.querySelectorAll("[data-diff-src]").forEach(el => {
+  el.innerHTML = fmtDiff(el.textContent);
+});
+</script>

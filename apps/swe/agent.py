@@ -69,7 +69,8 @@ def make_setup_node(run_id: str, source: Path):
     def setup_node(state: SWEState) -> SWEState:
         ws = WORKSPACE_ROOT / run_id
         if not ws.exists():  # resume-safe: keep code changes from before a crash
-            shutil.copytree(source, ws)
+            shutil.copytree(source, ws, ignore=shutil.ignore_patterns("__pycache__"))
+            (ws / ".gitignore").write_text("__pycache__/\n")
             _git(str(ws), "init", "-q")
             _git(str(ws), "add", "-A")
             _git(str(ws), "commit", "-q", "-m", "baseline")
