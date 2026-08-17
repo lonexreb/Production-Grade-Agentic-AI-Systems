@@ -10,6 +10,8 @@ from typing import Any
 
 import psycopg
 
+from runtime import schema
+
 DDL = """
 CREATE TABLE IF NOT EXISTS audit_log (
     id           bigserial PRIMARY KEY,
@@ -36,8 +38,7 @@ CREATE TRIGGER audit_log_no_rewrite
 
 
 def ensure_schema(conn: psycopg.Connection) -> None:
-    conn.execute(DDL)
-    conn.commit()
+    schema.apply_once(conn, "audit", DDL)
 
 
 def append(

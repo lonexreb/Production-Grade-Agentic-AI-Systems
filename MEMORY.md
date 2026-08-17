@@ -5,12 +5,25 @@ Read this first every session. Update it before ending every session.
 ## Current Phase
 
 Phase 4 — one app per slice, each funding a runtime improvement (see PHASE.md
-table). IT Ops slice SHIPPED (pending v0.4.0 tag after CI): the recovery
-ladder's fallback + rollback rungs are now runtime-level. Next app candidates:
-Customer Support (concurrency → shadow evals) or SWE agent (long runs,
-sandboxing).
+table). 4a (IT Ops, v0.4.0) and 4b (Support, pending v0.5.0 tag after CI)
+SHIPPED. Next app candidates: SWE agent (long runs, sandboxing — weak without
+an LLM key) or Recruiting (multi-day paused workflows).
 
 ## Last Session
+
+- **2026-08-16** — Phase 4b: Customer Support. FOUND+FIXED real bug: 8-way
+  concurrency stress test deadlocked Postgres — every ensure_schema re-ran
+  constraint-swap/trigger DDL (ACCESS EXCLUSIVE) concurrently. Fix:
+  runtime/schema.apply_once (per-process memo + pg_advisory_xact_lock) for all
+  module DDL, and engine._setup_saver gates LangGraph saver.setup() the same
+  way. runtime/shadow.py: ShadowRouter (records to shadow_calls, answers from
+  stubs, approval gates still enforced, real fns unreachable), shadowed()
+  swaps a module's router by convention, compare() diffs observations.
+  apps/support/: refunds policy<50/human/repeat-refunder-gated (episodic), KB
+  from semantic memory; build_graph(run_id, refund_limit=...) parameterizes
+  policy so candidate=same code. Demo prints shadow policy-impact table
+  ($75: human gate -> auto at limit 100). Evals 4/4. GIF. Blog draft #5.
+  41 tests.
 
 - **2026-08-15 (2)** — Phase 4a: IT Ops. Runtime: Tool.fallback (router routes
   to fallback after retry exhaustion; same-kwargs contract; _tried frozenset

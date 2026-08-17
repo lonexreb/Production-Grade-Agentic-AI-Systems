@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 import psycopg
 
-from runtime import config
+from runtime import schema, config
 
 DDL = """
 CREATE TABLE IF NOT EXISTS runs (
@@ -35,8 +35,7 @@ DEFAULT_LEASE_S = int(os.environ.get("OAOS_LEASE_S", "30"))
 
 
 def ensure_schema(conn: psycopg.Connection) -> None:
-    conn.execute(DDL)
-    conn.commit()
+    schema.apply_once(conn, "watchdog", DDL)
 
 
 def register(conn: psycopg.Connection, run_id: str, lease_s: int = DEFAULT_LEASE_S) -> None:

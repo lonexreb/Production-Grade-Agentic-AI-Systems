@@ -16,6 +16,8 @@ three tables on infrastructure we already run. Hand-rolled thin.
 from typing import Any
 
 import psycopg
+
+from runtime import schema
 from psycopg.types.json import Jsonb
 
 DDL = """
@@ -58,8 +60,7 @@ CREATE TABLE IF NOT EXISTS prompt_store (
 
 
 def ensure_schema(conn: psycopg.Connection) -> None:
-    conn.execute(DDL)
-    conn.commit()
+    schema.apply_once(conn, "memory", DDL)
 
 
 # --- episodic ---

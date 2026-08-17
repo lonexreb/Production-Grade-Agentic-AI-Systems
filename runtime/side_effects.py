@@ -15,6 +15,8 @@ from typing import Any, Callable
 
 import psycopg
 
+from runtime import schema
+
 DDL = """
 CREATE TABLE IF NOT EXISTS side_effects (
     key        text PRIMARY KEY,
@@ -34,8 +36,7 @@ ALTER TABLE side_effects ADD CONSTRAINT side_effects_status_check
 
 
 def ensure_schema(conn: psycopg.Connection) -> None:
-    conn.execute(DDL)
-    conn.commit()
+    schema.apply_once(conn, "side_effects", DDL)
 
 
 def make_key(run_id: str, node: str, scope: str = "0") -> str:

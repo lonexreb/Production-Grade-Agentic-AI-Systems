@@ -32,4 +32,6 @@ jobs:
       - run: uv run python -m apps.itops.demo
       - run: uv run python -m runtime.evals benchmarks/hr
       - run: uv run python -m runtime.evals benchmarks/finance
+      - run: uv run python -m apps.support.demo
       - run: uv run python -m runtime.evals benchmarks/itops
+      - run: uv run python -m runtime.evals benchmarks/support

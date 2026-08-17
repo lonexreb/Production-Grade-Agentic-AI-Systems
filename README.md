@@ -62,6 +62,10 @@ Jaeger UI at http://localhost:16686.
 
 ![IT Ops ladder demo](docs/media/itops-demo.gif)
 
+### Shadow eval: a policy change tested on recorded cases, zero side effects
+
+![Support shadow demo](docs/media/support-demo.gif)
+
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves
@@ -93,7 +97,17 @@ invoices — alongside offline eval suites per app
 (`python -m runtime.evals benchmarks/<app>`). The Finance Agent shipped without
 modifying a line of `runtime/` — the reuse bet, proven.
 
-**Phase 4 (IT Ops Agent + the full recovery ladder) — in progress.** The ladder
+**Phase 4b (Support Agent + concurrency + shadow evals) — in progress.**
+Customer Support runs risk-routed refunds (policy under $50, human above,
+repeat refunders always gated via episodic memory). It funded two runtime
+capabilities: concurrency-safe schema setup (the 8-way parallel stress test
+found a real DDL deadlock on its first run — fixed with advisory-lock-serialized,
+once-per-process setup) and **shadow mode** — candidate agent builds replay
+recorded cases through a router double that records intent and cannot touch the
+world, turning "what if we raise the refund limit to $100?" into a three-line
+table instead of a production experiment.
+
+**Phase 4a (IT Ops Agent + the full recovery ladder) — shipped (v0.4.0).** The ladder
 (`timeout → retry → fallback → rollback → escalate → resume`) is now entirely
 runtime-level: tools declare a `fallback` in their manifest (cycle-guarded, same
 kwargs contract), and `compensate_run` gives saga-style rollback over the

@@ -16,10 +16,22 @@ from langgraph.types import Command
 
 from runtime import config, otel, watchdog
 
+import threading
+
+_saver_ready: set[str] = set()  # db_urls whose checkpoint tables are set up
+_saver_lock = threading.Lock()
+
 
 @dataclass(frozen=True)
 class Runtime:
     db_url: str = config.DATABASE_URL
+
+    def _setup_saver(self, saver: PostgresSaver) -> None:
+        """saver.setup() runs DDL — once per process, or concurrent runs deadlock."""
+        with _saver_lock:
+            if self.db_url not in _saver_ready:
+                saver.setup()
+                _saver_ready.add(self.db_url)
 
     def _config(self, run_id: str) -> dict:
         return {"configurable": {"thread_id": run_id}}
@@ -34,7 +46,7 @@ class Runtime:
         with psycopg.connect(self.db_url) as conn:
             watchdog.register(conn, run_id)
         with PostgresSaver.from_conn_string(self.db_url) as saver:
-            saver.setup()
+            self._setup_saver(saver)
             graph = builder.compile(checkpointer=saver)
             with otel.span(
                 f"invoke_agent {run_id}",

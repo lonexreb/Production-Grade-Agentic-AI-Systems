@@ -1,0 +1,4 @@
+{"name": "small-refund-zero-touch", "input": {"email": "I want a refund of $20 for my order"}, "expect": {"human_touches": 0, "refunds": 1, "response_contains": "policy:refund-under-50"}}
+{"name": "large-refund-gated", "input": {"email": "I want a refund of $500 for my order", "decision": {"approved": true, "by": "lead@corp.example"}}, "expect": {"human_touches": 1, "refunds": 1}}
+{"name": "repeat-refunder-gated", "input": {"email": "I want a refund of $10 for my order", "prior_refunds": true, "decision": {"approved": false, "by": "lead@corp.example"}}, "expect": {"human_touches": 1, "refunds": 0, "response_contains": "declined"}}
+{"name": "question-answered-from-kb", "input": {"email": "where is my package?"}, "expect": {"human_touches": 0, "refunds": 0}}
