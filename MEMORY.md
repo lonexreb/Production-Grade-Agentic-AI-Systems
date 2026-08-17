@@ -4,12 +4,24 @@ Read this first every session. Update it before ending every session.
 
 ## Current Phase
 
-Phase 4 — one app per slice, each funding a runtime improvement (see PHASE.md
-table). 4a (IT Ops, v0.4.0) and 4b (Support, pending v0.5.0 tag after CI)
-SHIPPED. Next app candidates: SWE agent (long runs, sandboxing — weak without
-an LLM key) or Recruiting (multi-day paused workflows).
+Phase 4 — one app per slice. 4a (IT Ops, v0.4.0), 4b (Support, v0.5.0), and 4c
+(SWE agent, pending v0.6.0 tag after CI) SHIPPED. ANTHROPIC_API_KEY is LIVE in
+.env (gitignored; key was pasted in chat — REMIND USER to rotate it at
+console.anthropic.com when convenient). Remaining apps: Healthcare, Recruiting,
+Research, CTO, Exec — pick by demand.
 
 ## Last Session
+
+- **2026-08-16 (2)** — Phase 4c: SWE agent (flagship). Key saved to .env,
+  verified live. apps/swe/: issue → plan (LLM) → code (LLM full-file rewrite)
+  → test (real pytest, subprocess, per-run workspace copied from
+  sample_project, git init baseline) → bounded retry (MAX_CODE_ATTEMPTS=3,
+  gives up honestly) → review (LLM reads git diff) → merge gate (interrupt
+  with diff+review) → merge (approve-tier, execute_once, commit + patch file)
+  → episodic write. First live run: fixed divide() on attempt 1, reviewer
+  flagged float-comparison nuance unprompted. e2e test skipif no key (CI has
+  none → skips; HR/demo LLM paths fall back). workspace/ gitignored. GIF.
+  Blog draft #6. 42 tests green locally (LLM paths live).
 
 - **2026-08-16** — Phase 4b: Customer Support. FOUND+FIXED real bug: 8-way
   concurrency stress test deadlocked Postgres — every ensure_schema re-ran

@@ -66,6 +66,10 @@ Jaeger UI at http://localhost:16686.
 
 ![Support shadow demo](docs/media/support-demo.gif)
 
+### SWE agent: fixes failing tests, human approves the merge
+
+![SWE agent demo](docs/media/swe-demo.gif)
+
 The last command is the Phase 1 acceptance test: it starts an agent run, hard-kills
 the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves
@@ -97,7 +101,13 @@ invoices — alongside offline eval suites per app
 (`python -m runtime.evals benchmarks/<app>`). The Finance Agent shipped without
 modifying a line of `runtime/` — the reuse bet, proven.
 
-**Phase 4b (Support Agent + concurrency + shadow evals) — in progress.**
+**Phase 4c (SWE Agent) — in progress.** The flagship: issue → plan → code →
+test (real pytest in an isolated workspace) → bounded retry → LLM review →
+human merge gate → idempotent merge. Requires `ANTHROPIC_API_KEY` (single
+call site in `runtime/llm.py`, token usage traced); without it the e2e test
+skips honestly and every other LLM path falls back deterministically.
+
+**Phase 4b (Support Agent + concurrency + shadow evals) — shipped (v0.5.0).**
 Customer Support runs risk-routed refunds (policy under $50, human above,
 repeat refunders always gated via episodic memory). It funded two runtime
 capabilities: concurrency-safe schema setup (the 8-way parallel stress test
