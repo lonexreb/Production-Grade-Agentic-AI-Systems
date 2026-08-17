@@ -75,6 +75,20 @@ the process **after** its side effect executes but **before** the node completes
 (the worst-case crash window), resumes the same run in a fresh process, and proves
 the run finishes with the side effect executed **exactly once**.
 
+## Real reported problems, reproduced and fixed
+
+`examples/live_problems/` replays failures real developers reported publicly —
+bug first, then the fix — and CI asserts both halves on every push:
+
+| Reported failure | Fix demonstrated |
+|---|---|
+| [LangGraph HITL double-execution](https://forum.langchain.com/t/twice-execution-of-agent-when-using-the-interrupt/2964) — side effects before `interrupt()` run twice on resume | gate-first nodes + `execute_once`: 2 rows → 1 row |
+| Retry double-charge (Stripe-timeout / Printify double-order pattern) | deterministic side-effect keys forwarded as provider idempotency keys: 2 charges → 1 |
+| ["Crashed at step 37, restarted from step 1"](https://dev.to/george_belsky/your-ai-agent-crashed-at-step-47-now-what-41mb) | checkpoint-per-step: fresh process resumes at 37, $0.00 re-spent |
+
+GIFs in [docs/media](docs/media), write-up in
+[docs/blog](docs/blog/2026-08-17-three-real-failures-replayed.md).
+
 ## Status
 
 **Phase 1 (runtime core) — shipped.** Durable engine (run/resume/replay/history),

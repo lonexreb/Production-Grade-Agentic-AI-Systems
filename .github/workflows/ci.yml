@@ -35,3 +35,6 @@ jobs:
       - run: uv run python -m apps.support.demo
       - run: uv run python -m runtime.evals benchmarks/itops
       - run: uv run python -m runtime.evals benchmarks/support
+      - run: uv run python -m examples.live_problems.problem_1_hitl_double_execution
+      - run: uv run python -m examples.live_problems.problem_2_retry_double_charge
+      - run: uv run python -m examples.live_problems.problem_3_crash_at_step_37

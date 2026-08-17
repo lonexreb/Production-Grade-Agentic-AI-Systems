@@ -13,6 +13,17 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Last Session
 
+- **2026-08-17** — Live-problems series. Researched real reported failures and
+  built examples/live_problems/: (1) LangGraph HITL double-execution (forum
+  thread + raed.dev post) — naive effect-before-interrupt reproduces 2 rows,
+  gate-first + execute_once gives 1; (2) retry double-charge (r/AI_Agents
+  Printify story, Stripe-timeout pattern) — FakePaymentProvider commits then
+  times out; deterministic side-effect key forwarded as provider idempotency
+  key dedupes; (3) crash-at-37-of-50 (dev.to posts) — checkpoint-per-superstep
+  batch resumes at 37 in fresh process, $0 re-spent. Each script asserts BOTH
+  the bug and the fix; all three added to CI. 3 GIFs recorded
+  (docs/media/p1..p3). Blog draft #7 (three-real-failures-replayed) with
+  citations. README gets a "Real reported problems" table.
 - **2026-08-16 (3)** — Interactive showcase artifact published:
   https://claude.ai/code/artifact/4ef5349a-a2c3-4692-a8be-3fec6d9a28a5 (private
   until user shares from the page's Share menu). Six cases replay REAL runs
