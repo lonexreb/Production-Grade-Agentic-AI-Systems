@@ -6,10 +6,10 @@ Read this first every session. Update it before ending every session.
 
 Phase 4 — one app per slice. 4a (IT Ops, v0.4.0), 4b (Support, v0.5.0), and 4c
 (SWE agent, v0.6.0) SHIPPED. Keys LIVE in .env (gitignored): ANTHROPIC_API_KEY
-+ OPENROUTER_API_KEY ($30 lifetime limit, verified, not yet wired into
-runtime/llm.py). Both keys were pasted in chat — REMIND USER to rotate them
-(console.anthropic.com / openrouter.ai keys page) when convenient. Remaining
-apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
++ OPENROUTER_API_KEY ($30 lifetime limit; wired into runtime/llm.py as the
+"light" tier — see Gotchas). Both keys were pasted in chat — REMIND USER to
+rotate them (console.anthropic.com / openrouter.ai keys page) when convenient.
+Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Last Session
 
