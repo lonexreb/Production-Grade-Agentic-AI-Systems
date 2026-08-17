@@ -24,8 +24,12 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
   fix). Agent upgrades forced by real repo: rglob file discovery (was flat
   root-only), code max_tokens 2000→4000. Deps added (dev): sqlalchemy,
   aiosqlite. NOT in CI (needs key + network clone). GIF + blog draft #8.
-  OPEN OFFER to user: propose the patch upstream as a real PR (needs their
-  go-ahead; outward-facing).
+  User approved → UPSTREAM PR OPENED: https://github.com/mgomezdev/themis/pull/48
+  (fork lonexreb/themis, branch fix/issue-38-scope-guard-valueerror, base =
+  the issue's feature branch). PR includes fix + 3 tests (their conventions:
+  `from app.auth import ...`), before/after full-suite baseline showing no
+  regressions (24→22 failed, 247 env errors identical), honest agent-authored
+  provenance note. WATCH for maintainer response in future sessions.
 - **2026-08-17 (1)** — Live-problems series. Researched real reported failures and
   built examples/live_problems/: (1) LangGraph HITL double-execution (forum
   thread + raed.dev post) — naive effect-before-interrupt reproduces 2 rows,
