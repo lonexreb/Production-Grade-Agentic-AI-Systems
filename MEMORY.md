@@ -13,7 +13,20 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Last Session
 
-- **2026-08-17** — Live-problems series. Researched real reported failures and
+- **2026-08-17 (2)** — FULL LIVE CASE: SWE agent fixed real open issue
+  mgomezdev/themis#38 (auth scope guard is an assert, stripped under -O) on
+  the repo's actual branch (claude/themis-api-key-management-43n491 — issue
+  targets unmerged code). examples/live_case_swe/run.py: clones branch,
+  assembles workspace (real app/ pkg + acceptance test written FROM the issue,
+  incl. subprocess python -O proof; 2/3 failed pre-fix), runs agent with
+  verbatim issue text → 1 attempt, 3/3 green, reviewer independently explained
+  the -O rationale, human gate, 2-line patch (exactly the maintainer's asked
+  fix). Agent upgrades forced by real repo: rglob file discovery (was flat
+  root-only), code max_tokens 2000→4000. Deps added (dev): sqlalchemy,
+  aiosqlite. NOT in CI (needs key + network clone). GIF + blog draft #8.
+  OPEN OFFER to user: propose the patch upstream as a real PR (needs their
+  go-ahead; outward-facing).
+- **2026-08-17 (1)** — Live-problems series. Researched real reported failures and
   built examples/live_problems/: (1) LangGraph HITL double-execution (forum
   thread + raed.dev post) — naive effect-before-interrupt reproduces 2 rows,
   gate-first + execute_once gives 1; (2) retry double-charge (r/AI_Agents

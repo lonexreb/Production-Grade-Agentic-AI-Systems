@@ -89,6 +89,14 @@ bug first, then the fix — and CI asserts both halves on every push:
 GIFs in [docs/media](docs/media), write-up in
 [docs/blog](docs/blog/2026-08-17-three-real-failures-replayed.md).
 
+**Full live case:** the SWE agent fixed a real open GitHub issue
+([themis#38](https://github.com/mgomezdev/themis/issues/38) — an auth scope
+guard stripped under `python -O`) on the repo's actual branch: acceptance
+tests written from the issue text (2/3 failing before), one attempt, 3/3
+green including a `python -O` subprocess proof, human-gated merge, 2-line
+patch. `examples/live_case_swe/`, GIF in docs/media, write-up in
+[docs/blog](docs/blog/2026-08-17-live-case-real-github-issue.md).
+
 ## Status
 
 **Phase 1 (runtime core) — shipped.** Durable engine (run/resume/replay/history),

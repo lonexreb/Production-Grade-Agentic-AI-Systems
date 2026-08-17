@@ -81,7 +81,9 @@ def make_setup_node(run_id: str, source: Path):
 
 def make_plan_node(run_id: str):
     def plan_node(state: SWEState) -> SWEState:
-        files = [p.name for p in Path(state["workspace"]).glob("*.py")]
+        ws = Path(state["workspace"])
+        files = sorted(str(p.relative_to(ws)) for p in ws.rglob("*.py")
+                       if ".git" not in p.parts and "test" not in p.name)
         plan = llm.complete(
             f"Issue: {state['issue']}\nFiles in repo: {files}\n"
             "Reply with two lines exactly:\n"
@@ -120,7 +122,7 @@ def make_code_node(run_id: str):
             f"{target.read_text()}```\n{feedback}"
             "Reply with the COMPLETE new file content, nothing else.",
             system="You are a careful software engineer. Output only code.",
-            max_tokens=2000,
+            max_tokens=4000,
         )
         target.write_text(_strip_fences(new_content))
         attempts = state["attempts"] + 1
