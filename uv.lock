@@ -791,6 +791,7 @@ name = "openagentos"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anthropic" },
     { name = "fastapi" },
     { name = "langgraph" },
     { name = "langgraph-checkpoint-postgres" },
@@ -801,11 +802,6 @@ dependencies = [
     { name = "uvicorn" },
 ]
 
-[package.optional-dependencies]
-llm = [
-    { name = "anthropic" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "httpx" },
@@ -814,7 +810,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", marker = "extra == 'llm'", specifier = ">=0.50" },
+    { name = "anthropic", specifier = ">=0.121.0" },
     { name = "fastapi", specifier = ">=0.141.1" },
     { name = "langgraph", specifier = ">=0.4" },
     { name = "langgraph-checkpoint-postgres", specifier = ">=2.0" },
@@ -824,7 +820,6 @@ requires-dist = [
     { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.2" },
     { name = "uvicorn", specifier = ">=0.52.1" },
 ]
-provides-extras = ["llm"]
 
 [package.metadata.requires-dev]
 dev = [

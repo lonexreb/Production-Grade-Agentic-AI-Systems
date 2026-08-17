@@ -16,7 +16,7 @@ from typing import TypedDict
 
 import psycopg
 
-from runtime import Runtime, Tool, ToolRouter, execute_once, otel, side_effects
+from runtime import Runtime, Tool, ToolRouter, execute_once, llm, otel, side_effects
 from runtime.config import DATABASE_URL
 from langgraph.graph import END, START, StateGraph
 
@@ -53,25 +53,13 @@ router.register(Tool(name="send_greeting", fn=_send_greeting, timeout_s=10))
 
 
 def plan_node(state: DemoState) -> DemoState:
-    """LLM planner when ANTHROPIC_API_KEY is set (install extras: `uv sync --extra llm`);
-    deterministic stub otherwise so tests and CI never need secrets."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        try:
-            import anthropic
-
-            msg = anthropic.Anthropic().messages.create(
-                model="claude-sonnet-5",
-                max_tokens=100,
-                messages=[{
-                    "role": "user",
-                    "content": f"Write a one-line plan to fulfil this request: {state['request']}. "
-                               "Start your reply with 'greet the requester:'",
-                }],
-            )
-            return {"plan": msg.content[0].text.strip()}
-        except ImportError:
-            pass  # key set but `llm` extra not installed -> stub
-    return {"plan": f"greet the requester: {state['request']}"}
+    """LLM planner when a key is configured; deterministic stub otherwise."""
+    plan = llm.complete(
+        f"Write a one-line plan to fulfil this request: {state['request']}. "
+        "Start your reply with 'greet the requester:'",
+        max_tokens=100,
+    )
+    return {"plan": (plan or f"greet the requester: {state['request']}").strip()}
 
 
 def make_act_node(run_id: str):

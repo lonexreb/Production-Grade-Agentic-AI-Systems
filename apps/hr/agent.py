@@ -19,7 +19,7 @@ import psycopg
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
-from runtime import Tool, ToolRouter, audit, execute_once, side_effects
+from runtime import Tool, ToolRouter, audit, execute_once, llm, side_effects
 from runtime.config import DATABASE_URL
 from runtime.tools import Approval
 
@@ -65,29 +65,15 @@ router.register(Tool(name="notify", fn=_notify, risk_tier="notify"))
 
 
 def intent_node(state: HRState) -> HRState:
-    """LLM classifier when ANTHROPIC_API_KEY + `llm` extra are present;
-    keyword fallback otherwise so tests and CI never need secrets."""
-    import os
-
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        try:
-            import anthropic
-
-            msg = anthropic.Anthropic().messages.create(
-                model="claude-sonnet-5",
-                max_tokens=10,
-                messages=[{
-                    "role": "user",
-                    "content": "Classify this HR email as exactly one of: "
-                               f"{', '.join(POLICIES)}. Reply with the label only.\n\n"
-                               f"{state['email']}",
-                }],
-            )
-            label = msg.content[0].text.strip()
-            if label in POLICIES:
-                return {"intent": label}
-        except ImportError:
-            pass  # key set but `llm` extra not installed -> keyword fallback
+    """LLM classifier when a key is configured; keyword fallback otherwise
+    so tests and CI never need secrets."""
+    label = llm.complete(
+        "Classify this HR email as exactly one of: "
+        f"{', '.join(POLICIES)}. Reply with the label only.\n\n{state['email']}",
+        max_tokens=10,
+    )
+    if label and label.strip() in POLICIES:
+        return {"intent": label.strip()}
     text = state["email"].lower()
     intent = "update_direct_deposit" if "direct deposit" in text or "bank" in text \
         else "pto_balance"

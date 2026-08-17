@@ -12,10 +12,8 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.44.0",
     "fastapi>=0.141.1",
     "uvicorn>=0.52.1",
+    "anthropic>=0.121.0",
 ]
-
-[project.optional-dependencies]
-llm = ["anthropic>=0.50"]
 
 [dependency-groups]
 dev = [
