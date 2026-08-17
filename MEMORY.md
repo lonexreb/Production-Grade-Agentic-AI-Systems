@@ -163,6 +163,12 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Next Steps (ordered)
 
+0. Phase 5 (see PHASE.md + docs/research/2026-08-17-level-up-landscape.md):
+   ITBench entry is the flagship next build — clone itbench-hub/ITBench,
+   assess scenario harness (K8s incident RCA: alerts/traces/topology in),
+   wire IT Ops agent, get a reproducible score. Public bar: frontier agents
+   resolve 13.8% of SRE scenarios.
+
 1. Tag v0.3.0 once CI is green on the Phase 3 commit.
 2. USER: review blog drafts #1–#3 (docs/blog/) before publishing anywhere —
    publishing platform still undecided.
