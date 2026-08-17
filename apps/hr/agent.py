@@ -70,7 +70,7 @@ def intent_node(state: HRState) -> HRState:
     label = llm.complete(
         "Classify this HR email as exactly one of: "
         f"{', '.join(POLICIES)}. Reply with the label only.\n\n{state['email']}",
-        max_tokens=10,
+        max_tokens=10, tier="light",
     )
     if label and label.strip() in POLICIES:
         return {"intent": label.strip()}

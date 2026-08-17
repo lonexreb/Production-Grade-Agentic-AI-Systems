@@ -86,7 +86,7 @@ def make_plan_node(run_id: str):
             "Reply with two lines exactly:\n"
             "FILE: <the one file to modify>\n"
             "PLAN: <one sentence describing the change>",
-            max_tokens=150,
+            max_tokens=150, tier="light",
         )
         target = next((line.split(":", 1)[1].strip() for line in plan.splitlines()
                        if line.startswith("FILE:")), files[0])

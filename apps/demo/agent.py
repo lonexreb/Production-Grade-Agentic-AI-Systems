@@ -57,7 +57,7 @@ def plan_node(state: DemoState) -> DemoState:
     plan = llm.complete(
         f"Write a one-line plan to fulfil this request: {state['request']}. "
         "Start your reply with 'greet the requester:'",
-        max_tokens=100,
+        max_tokens=100, tier="light",
     )
     return {"plan": (plan or f"greet the requester: {state['request']}").strip()}
 

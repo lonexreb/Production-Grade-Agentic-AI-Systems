@@ -142,6 +142,13 @@ apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Gotchas
 
+- LLM cost routing: llm.complete(tier="light") -> OpenRouter gpt-4o-mini
+  (override with OAOS_LIGHT_MODEL); "heavy" (default) -> Anthropic Claude.
+  OpenRouter failure falls back to Anthropic silently. Light sites: HR intent,
+  demo planner, SWE plan. SWE code+review stay heavy on purpose.
+- Local test runs now spend real (tiny) API money on both providers; CI has no
+  keys and stays free.
+
 - OTel GenAI semconv is still experimental — pin the version; keep attribute names
   isolated in `runtime/otel.py`.
 - LangGraph resume is caller-triggered: without the watchdog, a dead run stays dead.
