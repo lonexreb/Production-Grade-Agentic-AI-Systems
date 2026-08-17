@@ -13,6 +13,16 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Last Session
 
+- **2026-08-16 (3)** — Interactive showcase artifact published:
+  https://claude.ai/code/artifact/4ef5349a-a2c3-4692-a8be-3fec6d9a28a5 (private
+  until user shares from the page's Share menu). Six cases replay REAL runs
+  exported from Postgres (audit trails, approvals, rollback ledger, shadow
+  table, SWE diff) with a step player syncing graph nodes + ledger + payload
+  inspector. Sources + build.py in docs/showcase/ (rerun build.py with fresh
+  rundata.json to regenerate). Verified interactively via localhost (artifact
+  iframe blocks automation clicks; humans are fine). Cost-tier routing live:
+  light→OpenRouter gpt-4o-mini, heavy→Claude. SWE workspaces now gitignore
+  __pycache__ (was polluting merge diffs).
 - **2026-08-16 (2)** — Phase 4c: SWE agent (flagship). Key saved to .env,
   verified live. apps/swe/: issue → plan (LLM) → code (LLM full-file rewrite)
   → test (real pytest, subprocess, per-run workspace copied from
