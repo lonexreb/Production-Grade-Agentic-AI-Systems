@@ -13,6 +13,23 @@ Remaining apps: Healthcare, Recruiting, Research, CTO, Exec — pick by demand.
 
 ## Last Session
 
+- **2026-08-17 (3)** — Phase 5 ITBench build IN PROGRESS. Environment: Docker
+  Desktop memory raised 7.6→20GB (settings-store.json key is `memoryMiB`,
+  lowercase; app must be restarted), kind+helm+go installed, ITBench cloned to
+  scratchpad (uv pin relaxed ==0.12.4→>=0.9 to run `make deps`), kind cluster
+  `kind-dev` created via their clusters/kind Makefile. Scenario 1 = OTel Demo
+  flooded via flagd flag loadGeneratorFloodHomepage (ground truth: set
+  defaultVariant off in flagd-config CM + rollout restart; Mac-compatible app).
+  `SCENARIO_NUMBER=1 make start-scenario` running in scenarios/sre (deploys
+  observability incl. ClickHouse + OTel demo + injects fault; slow image
+  pulls). BUILT: apps/sre/agent.py (alerts→evidence→LLM diagnosis JSON→policy
+  gate→constrained remediation actions→verify loop→episodic memory; env
+  OAOS_PROM_URL + OAOS_KUBE_CONTEXT=kind-kind-dev) +
+  benchmarks/itbench/run_scenario1.py (scores diagnosis entity hit, flag off,
+  alerts cleared = /3). NEXT: wait for start-scenario, port-forward/find
+  Prometheus URL (`make display-endpoints`), run the runner, iterate, GIF+blog,
+  then `SCENARIO_NUMBER=1 make stop-scenario` + `make destroy-simple-cluster`
+  in clusters/kind when done.
 - **2026-08-17 (2)** — FULL LIVE CASE: SWE agent fixed real open issue
   mgomezdev/themis#38 (auth scope guard is an assert, stripped under -O) on
   the repo's actual branch (claude/themis-api-key-management-43n491 — issue
